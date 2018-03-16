@@ -1,0 +1,3 @@
+NAMESPACE=iot-serverless
+NAMESPACE_DISPLAY_NAME=IoT serverless
+NAMESPACE_DESCRIPTION=Serverless technologies to manage and process Internet of Things (IoT) assets
