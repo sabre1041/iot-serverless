@@ -1,2 +1,4 @@
 MQ_USERNAME=iot-serverless
 MQ_PASSWORD=iot-serverless
+MQ_PROTOCOL=openwire,mqtt
+AMQ_MESH_DISCOVERY_TYPE=dns

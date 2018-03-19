@@ -1,0 +1,4 @@
+MONGODB_USER=iot-serverless
+MONGODB_PASSWORD=iot-serverless
+MONGODB_DATABASE=iotserverless
+DATABASE_SERVICE_NAME=mongodb

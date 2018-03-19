@@ -18,11 +18,11 @@ package com.redhat.iot.repository;
 
 import java.util.List;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.redhat.iot.model.TriggerData;
 
-public interface TriggerRepository extends CrudRepository<TriggerData, Integer> {
+public interface TriggerRepository extends MongoRepository<TriggerData, Integer> {
 	
 	TriggerData findByTriggerName(String triggerName);
 	List<TriggerData> findByTopic(String topic);

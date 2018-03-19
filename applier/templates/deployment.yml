@@ -64,6 +64,23 @@ objects:
             value: ${MQ_USERNAME}
           - name: SPRING_ACTIVEMQ_PASSWORD
             value: ${MQ_PASSWORD}
+          - name: SPRING_PROFILES_ACTIVE
+            value: ${SPRING_PROFILE}
+          - name: MONGODB_USER
+            valueFrom:
+              secretKeyRef:
+                name: "${MONGODB_SERVICE}"
+                key: database-user
+          - name: MONGODB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: "${MONGODB_SERVICE}"
+                key: database-password
+          - name: MONGODB_DATABASE
+            valueFrom:
+              secretKeyRef:
+                name: "${MONGODB_SERVICE}"
+                key: database-name
           image: ${APPLICATION_NAME}
           imagePullPolicy: Always
           name: ${APPLICATION_NAME}
@@ -108,6 +125,9 @@ parameters:
 - description: The name for the AMQ Broker Service.
   name: MQ_APPLICATION_SERVICE
   required: true
+- description: The name for the Mongodb Service.
+  name: MONGODB_SERVICE
+  required: true
 - description: User name for standard broker user.  It is required for connecting to the broker.  If left empty, it will be generated.
   displayName: A-MQ Username
   name: MQ_USERNAME
@@ -115,3 +135,8 @@ parameters:
   displayName: A-MQ Password
   required: true
   name: MQ_PASSWORD
+- description: Active Spring Profile
+  displayName: Spring Profile
+  required: true
+  value: openshift
+  name: SPRING_PROFILE

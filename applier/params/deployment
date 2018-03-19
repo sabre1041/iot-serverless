@@ -1,3 +1,4 @@
 MQ_USERNAME=iot-serverless
 MQ_PASSWORD=iot-serverless
 MQ_APPLICATION_SERVICE=broker-amq-tcp
+MONGODB_SERVICE=mongodb

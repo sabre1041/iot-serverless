@@ -16,32 +16,29 @@
 
 package com.redhat.iot.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-@Entity(name="triggers")
+@Document(collection="triggers")
 public class TriggerData {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id;
 
-    @Column(name="triggerName")
+    @Field(value="triggerName")
     private String triggerName;
 
-    @Column(name="triggerNamespace")
+    @Field(value="triggerNamespace")
     private String triggerNamespace;
 
-    @Column(name="shortTriggerName")
+    @Field(value="shortTriggerName")
     private String shortTriggerName;
     
-    @Column(name="auth")
+    @Field(value="auth")
     private String authKey;
     
-    @Column(name="topic")
+    @Field(value="topic")
     private String topic;
     
     public TriggerData() {
@@ -52,11 +49,11 @@ public class TriggerData {
         this.authKey = authKey;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

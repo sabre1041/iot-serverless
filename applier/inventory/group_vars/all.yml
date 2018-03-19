@@ -12,6 +12,10 @@
       template: "openshift//amq63-persistent"
       params: "{{ inventory_dir }}/../params/amq"
       namespace: iot-serverless
+    - name: "deploy-mongodb"
+      template: "openshift//mongodb-persistent"
+      params: "{{ inventory_dir }}/../params/mongodb"
+      namespace: iot-serverless
     - name: "deploy-mqtt-provider"
       template: "{{ inventory_dir }}/../templates/deployment.yml"
       params: "{{ inventory_dir }}/../params/deployment"

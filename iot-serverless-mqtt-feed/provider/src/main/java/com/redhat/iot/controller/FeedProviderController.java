@@ -16,6 +16,7 @@
 
 package com.redhat.iot.controller;
 
+import javax.annotation.PostConstruct;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 
@@ -41,7 +42,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.servlet.HandlerMapping;
 
 import com.redhat.iot.exception.UnprocessableEntityException;
 import com.redhat.iot.model.EventPayload;
@@ -72,6 +72,15 @@ public class FeedProviderController {
 		this.jmsListenerEndpointRegistry = jmsListenerEndpointRegistry;
 		this.jmsFeedContainerFactory = jmsFeedContainerFactory;
 	}
+
+	  @PostConstruct
+	  private void reconstructListenersFromDB() {
+	    LOGGER.info("Reconstructing all Listeners");
+	    triggerDataService.findAll().stream().forEach(triggerData -> {
+	    	LOGGER.info("Reconstructing Listener for trigger {} and destination {}", triggerData.getTriggerName(), triggerData.getTopic());
+			addListenerEndpointToRegistry(triggerData.getTriggerName(), triggerData.getTopic());
+	    });
+	  }
 
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)

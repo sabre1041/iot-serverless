@@ -34,6 +34,10 @@ public class TriggerDataService {
 		
 		return true;
 	}
+
+	public List<TriggerData> findAll() {
+		return triggerRepository.findAll();
+	}
 	
 	public boolean delete(TriggerData triggerData) {
 		triggerRepository.delete(triggerData);
