@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: mqtt-provider-build
+  template: software-sensor-build
 metadata:
   annotations:
-    description: Build a MQTT Provider Image
+    description: Build a Software Sensor Image
     iconClass: icon-java
     tags: java
-  name: iot-provider-build
+  name: software-sensor-build
 objects:
 - apiVersion: v1
   kind: ImageStream
@@ -47,7 +47,7 @@ parameters:
 - description: The name for the application.
   name: APPLICATION_NAME
   required: true
-  value: mqtt-provider
+  value: software-sensor
 - description: Git source URI for application
   name: SOURCE_REPOSITORY_URL
   required: true
@@ -59,7 +59,7 @@ parameters:
 - description: Path within Git project to build; empty for root project directory.
   name: CONTEXT_DIR
   required: false
-  value: iot-serverless-mqtt-feed/provider
+  value: iot-serverless-software-sensor
 - description: Base ImageStream Tag
   name: BASE_IMAGESTREAMTAG
   required: true

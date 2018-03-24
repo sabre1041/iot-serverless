@@ -29,8 +29,8 @@ public class OpenWhiskService {
 	private final Logger LOGGER = LoggerFactory.getLogger(OpenWhiskService.class);
 	
 	public void invokeTriggers(String topic, EventPayload eventPayload) {
-		
-		List<TriggerData> triggerDatas = triggerDataService.getTriggersByTopic(topic);
+
+		List<TriggerData> triggerDatas = triggerDataService.getTriggersByTopicDestination(topic);
 		System.out.println("Trigger Datas Size: "+triggerDatas.size());
 		
 		triggerDatas.parallelStream().forEach(triggerData -> {

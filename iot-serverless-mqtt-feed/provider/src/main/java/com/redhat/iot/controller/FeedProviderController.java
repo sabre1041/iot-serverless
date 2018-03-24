@@ -168,7 +168,7 @@ public class FeedProviderController {
 				e.printStackTrace();
 			}
 	    	
-	    	EventPayload eventPayload = new EventPayload(messageContent);
+	    	EventPayload eventPayload = new EventPayload(topicDestinationName, messageContent);
 	    	
 	    	openWhiskService.invokeTriggers(topicDestinationName, eventPayload);
 	    	

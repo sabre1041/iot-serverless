@@ -1,0 +1,78 @@
+mqtt:
+  url: tcp://localhost:1883
+  username: admin
+  password: admin
+  clientId: proximity-sensor
+assets:
+  - name: Chemical Pump LX-222
+    location: Boiler room
+    topic: /sf/boiler/pump-lx222
+    latitude: 37.784172
+    longitude: -122.401558
+    frequency: 5000
+    iterations: 10
+    iterationChangeLatitude: 0.000008
+    iterationChangeLongitude: 0.0
+  - name: Blow down separator valve VL-1
+    location: Boiler room
+    topic: /sf/boiler/separator-vl-1
+    latitude: 37.784162
+    longitude: -122.401568
+    frequency: 0
+    iterations: 1
+    iterationChangeLatitude: 0.0
+    iterationChangeLongitude: 0.0
+  - name: Surface blow down controller
+    location: Boiler room
+    topic: /sf/boiler/controller
+    latitude: 37.784160
+    longitude: -122.401562
+    frequency: 0
+    iterations: 1
+    iterationChangeLatitude: 0.0
+    iterationChangeLongitude: 0.0
+  - name: Condensate duplex pump
+    location: Boiler room
+    topic: /sf/boiler/cond-pump
+    latitude: 37.784158
+    longitude: -122.401558
+    frequency: 5000
+    iterations: 10
+    iterationChangeLatitude: 0.0
+    iterationChangeLongitude: -0.000005
+  - name: Robotic arm joint RT-011
+    location: Assembly section
+    topic: /sf/assembly/robotic-joint
+    latitude: 37.784262
+    longitude: -122.401550
+    frequency: 0
+    iterations: 1
+    iterationChangeLatitude: 0.0
+    iterationChangeLongitude: 0.0
+  - name: Teledyne DALSA Camera
+    location: Assembly section
+    topic: /sf/assembly/camera
+    latitude: 37.784264
+    longitude: -122.401550
+    frequency: 0
+    iterations: 1
+    iterationChangeLatitude: 0.0
+    iterationChangeLongitude: 0.0
+  - name: Lighting control unit RT-SD-1000
+    location: Warehouse
+    topic: /sf/warehouse/lighting-control
+    latitude: 37.784270
+    longitude: -122.401540
+    frequency: 5000
+    iterations: 10
+    iterationChangeLatitude: 0.000008
+    iterationChangeLongitude: 0.0
+  - name: DIN Rail power supply 240-24
+    location: Warehouse
+    topic: /sf/warehouse/power-supply
+    latitude: 37.784271
+    longitude: -122.401542
+    frequency: 0
+    iterations: 1
+    iterationChangeLatitude: 0.0
+    iterationChangeLongitude: 0.0

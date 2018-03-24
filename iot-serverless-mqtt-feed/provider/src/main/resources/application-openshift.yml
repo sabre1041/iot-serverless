@@ -2,11 +2,6 @@ spring:
   data:
     mongodb:
       uri: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_SERVICE_HOST}:${MONGODB_SERVICE_PORT}/${MONGODB_DATABASE}
-  #datasource:
-   # url: "jdbc:h2:mem:triggerdata;DB_CLOSE_ON_EXIT=FALSE"
-   # username: sa
-   # password:
-   # driver-class-name: org.h2.Driver
 
   activemq:
     broker-url: tcp://${BROKER_AMQ_SERVICE_HOST}:${BROKER_AMQ_SERVICE_PORT}

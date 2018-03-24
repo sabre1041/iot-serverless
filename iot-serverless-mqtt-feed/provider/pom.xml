@@ -119,7 +119,7 @@
     	  <groupId>de.flapdoodle.embed</groupId>
 		  <artifactId>de.flapdoodle.embed.mongo</artifactId>
  	  	  <version>${mongodb.embedded.version}</version>
- 	  	  <scope>test</scope>
+ 	  	  <scope>runtime</scope>
 		</dependency>
       </dependencies>
     </profile>

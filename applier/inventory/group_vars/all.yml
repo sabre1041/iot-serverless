@@ -6,24 +6,46 @@
       template: "https://raw.githubusercontent.com/redhat-cop/cluster-lifecycle/master/files/projectrequest/template.yml"
       template_action: create
       params: "{{ inventory_dir }}/../params/iot-serverless-project"
+      tags:
+        - projects
   - object: deployments
     content:
     - name: "deploy-amq"
       template: "openshift//amq63-persistent"
       params: "{{ inventory_dir }}/../params/amq"
       namespace: iot-serverless
+      tags:
+        - amq
     - name: "deploy-mongodb"
       template: "openshift//mongodb-persistent"
       params: "{{ inventory_dir }}/../params/mongodb"
       namespace: iot-serverless
+      tags:
+        - mongodb
     - name: "deploy-mqtt-provider"
-      template: "{{ inventory_dir }}/../templates/deployment.yml"
-      params: "{{ inventory_dir }}/../params/deployment"
+      template: "{{ inventory_dir }}/../templates/mqtt-provider-deployment.yml"
+      params: "{{ inventory_dir }}/../params/mqtt-provider-deployment"
       namespace: iot-serverless
+      tags:
+        - provider
+    - name: "deploy-software-sensor"
+      template: "{{ inventory_dir }}/../templates/software-sensor-deployment.yml"
+      params: "{{ inventory_dir }}/../params/software-sensor-deployment"
+      namespace: iot-serverless
+      tags:
+        - sensor
   - object: builds
     content:
       - name: "build-mqtt-provider"
-        template: "{{ inventory_dir }}/../templates/build.yml"
-        params: "{{ inventory_dir }}/../params/build"
+        template: "{{ inventory_dir }}/../templates/mqtt-provider-build.yml"
+        params: "{{ inventory_dir }}/../params/mqtt-provider-build"
         namespace: iot-serverless
+        tags:
+          - provider
+      - name: "build-software-sensor"
+        template: "{{ inventory_dir }}/../templates/software-sensor-build.yml"
+        params: "{{ inventory_dir }}/../params/software-sensor-build"
+        namespace: iot-serverless
+        tags:
+          - sensor
     

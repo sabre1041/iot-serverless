@@ -64,20 +64,30 @@ oc adm pod-network join-projects --to=openwhisk iot-serverless
     wsk -i action update -a feed true iot-serverless/mqttFeed iot-serverless-mqtt-feed/action/feed_action.js
     ```
 
-3. Create Trigger
+## Configure OpenWhisk for Software Sensor
+
+1. Create Trigger
 
     ```
-    wsk -i trigger create mqttTrigger --feed iot-serverless/mqttFeed -p topic sw-sensor
+    wsk -i trigger create softwareSensorTrigger --feed iot-serverless/mqttFeed -p topic .sf.>
     ```
 
-4. Create Action
+2. Create Action
 
     ```
-    wsk -i action create testAction iot-serverless-openwhisk-action/test_action.js
+    wsk -i action create softwareSensorAction iot-serverless-openwhisk-action/test_action.js
     ```
 
-5. Create rule
+3. Create rule
 
     ```
-    wsk -i rule create mqttRule mqttTrigger testAction
+    wsk -i rule create softwareSensorRule softwareSensorTrigger softwareSensorAction
+    ```
+
+## Scale Up Software Sensor
+
+By default, the Software sensor contains 0 replicas. Execute the following command to scale the software sensor to 1 replica:
+
+    ```
+    oc scale dc/software-sensor --replicas=1
     ```

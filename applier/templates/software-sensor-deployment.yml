@@ -1,19 +1,19 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: mqtt-provider-deployment
+  template: software-sensor-deployment
 metadata:
   annotations:
-    description: Deploys the MQTT Provider Image
+    description: Deploys the Software Sensor Image
     iconClass: icon-java
     tags: java
-  name: mqtt-provider-deployment
+  name: software-sensor-deployment
 objects:
 - apiVersion: v1
   kind: Service
   metadata:
     annotations:
-      description: MQTT Provider Port.
+      description: Software Sensor Port.
     labels:
       application: ${APPLICATION_NAME}
       deploymentConfig: ${APPLICATION_NAME}
@@ -37,7 +37,7 @@ objects:
       deploymentConfig: ${APPLICATION_NAME}
     name: ${APPLICATION_NAME}
   spec:
-    replicas: 1
+    replicas: 0
     selector:
       application: ${APPLICATION_NAME}
       deploymentconfig: ${APPLICATION_NAME}
@@ -58,30 +58,19 @@ objects:
       spec:
         containers:
         - env:
-          - name: SPRING_ACTIVEMQ_BROKER_URL
-            value: tcp://${MQ_APPLICATION_SERVICE}:61616
-          - name: SPRING_ACTIVEMQ_USER
-            value: ${MQ_USERNAME}
-          - name: SPRING_ACTIVEMQ_PASSWORD
-            value: ${MQ_PASSWORD}
-          - name: SPRING_PROFILES_ACTIVE
-            value: ${SPRING_PROFILE}
-          - name: MONGODB_USER
+          - name: MQTT_URL
+            value: tcp://${MQTT_APPLICATION_SERVICE}:1883
+          - name: MQTT_USERNAME
+            value: ${MQTT_USERNAME}
+          - name: MQTT_PASSWORD
+            value: ${MQTT_PASSWORD}
+          - name: MQTT_TOPIC
+            value: ${MQTT_TOPIC}
+          - name: MQTT_CLIENTID
             valueFrom:
-              secretKeyRef:
-                name: "${MONGODB_SERVICE}"
-                key: database-user
-          - name: MONGODB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: "${MONGODB_SERVICE}"
-                key: database-password
-          - name: MONGODB_DATABASE
-            valueFrom:
-              secretKeyRef:
-                name: "${MONGODB_SERVICE}"
-                key: database-name
-          image: ${APPLICATION_NAME}
+              fieldRef:
+                fieldPath: metadata.name
+          image: ''
           imagePullPolicy: Always
           name: ${APPLICATION_NAME}
           ports:
@@ -121,22 +110,18 @@ parameters:
 - description: The name for the application.
   name: APPLICATION_NAME
   required: true
-  value: mqtt-provider
+  value: software-sensor
 - description: The name for the AMQ Broker Service.
-  name: MQ_APPLICATION_SERVICE
-  required: true
-- description: The name for the Mongodb Service.
-  name: MONGODB_SERVICE
+  name: MQTT_APPLICATION_SERVICE
   required: true
 - description: User name for standard broker user.  It is required for connecting to the broker.  If left empty, it will be generated.
   displayName: A-MQ Username
-  name: MQ_USERNAME
+  name: MQTT_USERNAME
 - description: Password for standard broker user.  It is required for connecting to the broker.  If left empty, it will be generated.
   displayName: A-MQ Password
   required: true
-  name: MQ_PASSWORD
-- description: Active Spring Profile
-  displayName: Spring Profile
+  name: MQTT_PASSWORD
+- description: MQTT Topic.
+  name: MQTT_TOPIC
+  value: proxsensor01
   required: true
-  value: openshift
-  name: SPRING_PROFILE

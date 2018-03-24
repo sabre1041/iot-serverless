@@ -1,0 +1,4 @@
+MQTT_USERNAME=iot-serverless
+MQTT_PASSWORD=iot-serverless
+MQTT_APPLICATION_SERVICE=broker-amq-mqtt
+MQTT_TOPIC=proxsensor01

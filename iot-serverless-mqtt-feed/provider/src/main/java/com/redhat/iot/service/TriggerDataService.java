@@ -1,7 +1,10 @@
 package com.redhat.iot.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.activemq.command.ActiveMQTopic;
+import org.apache.activemq.filter.DestinationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -44,8 +47,24 @@ public class TriggerDataService {
 		return true;
 	}
 	
-	public List<TriggerData> getTriggersByTopic(String topic) {
-		return triggerRepository.findByTopic(topic);
+	public List<TriggerData> getTriggersByTopicDestination(String topic) {
+
+		ActiveMQTopic destinationTopic = new ActiveMQTopic(topic);
+		
+		List<TriggerData> triggerDatas = new ArrayList<TriggerData>();
+		
+		triggerRepository.findAll().forEach(triggerData -> {
+			
+			ActiveMQTopic triggerDataTopic = new ActiveMQTopic(triggerData.getTopic());
+			DestinationFilter filter = DestinationFilter.parseFilter(triggerDataTopic);
+			
+			if(filter.matches(destinationTopic)) {
+				triggerDatas.add(triggerData);
+			}
+			
+		});
+		
+		return triggerDatas;
 	}
 	
 	public TriggerData getTriggerByName(String triggerName) {
