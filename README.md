@@ -69,7 +69,7 @@ oc adm pod-network join-projects --to=openwhisk iot-serverless
 1. Create Trigger
 
     ```
-    wsk -i trigger create softwareSensorTrigger --feed iot-serverless/mqttFeed -p topic .sf.>
+    wsk -i trigger create softwareSensorTrigger --feed iot-serverless/mqttFeed -p topic ".sf.>"
     ```
 
 2. Create Action
