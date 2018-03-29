@@ -48,4 +48,11 @@
         namespace: iot-serverless
         tags:
           - sensor
-    
+  - object: jobs
+    content:
+      - name: "mongodb-database-seed"
+        template: "{{ inventory_dir }}/../templates/mongodb-database-seed.yml"
+        params: "{{ inventory_dir }}/../params/mongodb-database-seed"
+        namespace: iot-serverless
+        tags:
+          - seed
