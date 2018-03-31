@@ -75,13 +75,13 @@ oc adm pod-network join-projects --to=openwhisk iot-serverless
 2. Create Action
 
     ```
-    wsk -i action create softwareSensorAction iot-serverless-openwhisk-action/test_action.js
+    wsk -i action create formatTopicAction iot-serverless-openwhisk-action/format_topic.js
     ```
 
 3. Create rule
 
     ```
-    wsk -i rule create softwareSensorRule softwareSensorTrigger softwareSensorAction
+    wsk -i rule create softwareSensorRule softwareSensorTrigger formatTopicAction
     ```
 
 ## Scale Up Software Sensor
