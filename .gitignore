@@ -5,3 +5,5 @@ target
 .classpath
 galaxy
 node_modules
+dist
+.env

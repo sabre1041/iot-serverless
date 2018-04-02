@@ -1,0 +1,22 @@
+{
+  "name": "iot-serverless-openwhisk-functions-enricher",
+  "version": "1.0.0",
+  "description": "Enriches Input",
+  "main": "enrich.js",
+  "scripts": {
+    "package": "mkdir -p dist && zip -r dist/enricher.zip . --exclude 'dist/*'",
+    "deploy": "wsk -i action update enricher dist/enricher.zip --kind nodejs:8",
+    "dev": "wsk -i action invoke enricher --result"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sabre1041/iot-serverless.git"
+  },
+  "author": "Andrew Block",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "dotenv": "^5.0.1",
+    "mongodb": "^3.0.5",
+    "util": "^0.10.3"
+  }
+}

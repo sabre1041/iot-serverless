@@ -9,6 +9,7 @@ The following prerequisites must be met in order to properly deploy the project
 * OpenShift cluster
 * OpenWhisk Installed (Can use [this](https://github.com/projectodd/openwhisk-openshift) implementation) in a project called `openwhisk`
 * Ansible (For automated provisioning)
+* [Node](https://nodejs.org/en/) and [npm](https://www.npmjs.com/)
 
 ## Deploying the Infrastructure
 
@@ -50,15 +51,91 @@ Join the two networks by issuing the following command:
 oc adm pod-network join-projects --to=openwhisk iot-serverless
 ```
 
-## Configure MQTT Feed
+## OpenWhisk Configurations
 
-1. Create package
+This section describes how to configure OpenWhisk for the project
+
+### Package Creation
+
+Create a package
 
     ```
     wsk -i package create --shared yes iot-serverless
     ```
 
-2. Create Feed Action
+## Configure Actions
+
+Several actions are available as function to perform a specific functionality:
+
+1. Create an action to format the input
+
+    ```
+    wsk -i action update formatInput iot-serverless-openwhisk-functions/format/format_input.js
+    ```
+
+2. Create an action to enrich the input
+
+    1. Install dependencies
+
+    ```
+    pushd  iot-serverless-openwhisk-functions/enricher
+    npm install
+    ```
+    2. Configure environment variables
+
+    The action makes use of environment variables that describe how to connect to the mongodb instance. The function will utilize a file called `.env` within the project folder. A template of this file called [example.env](iot-serverless-openwhisk-functions/enricher/example.env) is available to manually provide the set of properties. The required values are sourced from the mongodb secret that was created when the mongodb instance was provisioned.
+
+    Copy the template file to create the required file:
+
+    ```
+    cp example.env .env
+    ```
+
+    The following values must be configured:
+
+    * MongoDB Username
+    * MondoDB Password
+    * MongoDB Database
+
+    These values are stored in the mongodb secret which can be seen by running the following command
+
+    ```
+    oc describe secret mongodb -n iot-serverless
+    ```
+
+    Underneath _Data_, notice the keys defined within the secret which we can utilize.
+
+    To obtain a particular value, execute the following command:
+
+    ```
+    oc get secrets mongodb -o jsonpath='{.data.<key>}' -n iot-serverless | base64 -d
+    ```
+
+    Replace `<key>` with the particular key from the mongodb secret (such as database-name).
+
+    Note: When running on OSX, you will need to modify the `base64` command above to be `base64 -D`
+
+    Update the `.env` file with the decoded values
+
+    3. Package and deploy the function
+
+    ```
+    npm run package
+    npm run deploy
+    popd 
+    ```
+
+3. Create a Sequence Action
+
+    ```
+    wsk -i action update processAsset --sequence formatInput,enricher
+    ```
+
+
+## Configure MQTT Feed
+
+
+1. Create Feed Action
 
     ```
     wsk -i action update -a feed true iot-serverless/mqttFeed iot-serverless-mqtt-feed/action/feed_action.js
@@ -66,22 +143,16 @@ oc adm pod-network join-projects --to=openwhisk iot-serverless
 
 ## Configure OpenWhisk for Software Sensor
 
-1. Create Trigger
+2. Create Trigger
 
     ```
     wsk -i trigger create softwareSensorTrigger --feed iot-serverless/mqttFeed -p topic ".sf.>"
     ```
 
-2. Create Action
-
-    ```
-    wsk -i action create formatTopicAction iot-serverless-openwhisk-action/format_topic.js
-    ```
-
 3. Create rule
 
     ```
-    wsk -i rule create softwareSensorRule softwareSensorTrigger formatTopicAction
+    wsk -i rule create softwareSensorRule softwareSensorTrigger processAsset
     ```
 
 ## Scale Up Software Sensor
