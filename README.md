@@ -73,7 +73,14 @@ Several actions are available as function to perform a specific functionality:
     wsk -i action update formatInput iot-serverless-openwhisk-functions/format/format_input.js
     ```
 
-2. Create an action to enrich the input
+2. Create an action to enforce geofencing
+
+    ```
+    wsk -i action update geofence iot-serverless-openwhisk-functions/geofence/geofence.js
+    ```
+
+
+3. Create an action to enrich the input
 
     1. Install dependencies
 
@@ -125,10 +132,10 @@ Several actions are available as function to perform a specific functionality:
     popd 
     ```
 
-3. Create a Sequence Action
+4. Create a Sequence Action
 
     ```
-    wsk -i action update processAsset --sequence formatInput,enricher
+    wsk -i action update processAsset --sequence formatInput,enricher,geofence
     ```
 
 
