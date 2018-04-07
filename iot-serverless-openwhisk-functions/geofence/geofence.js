@@ -20,6 +20,9 @@ function main(params) {
       if(d > params.geofence_radius) {
         params.alert = 1;
       }
+      else {
+        params.alert = 0;
+      }
     }
     else {
       console.log("Required Parameters for Geofence Calculation Not Provided");
