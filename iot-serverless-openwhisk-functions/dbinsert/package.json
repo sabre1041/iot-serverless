@@ -1,0 +1,22 @@
+{
+  "name": "iot-serverless-openwhisk-functions-dbinsert",
+  "version": "1.0.0",
+  "description": "Inserts Records Into Database",
+  "main": "dbinsert.js",
+  "scripts": {
+    "package": "mkdir -p dist && zip -r dist/dbinsert.zip . --exclude 'dist/*'",
+    "deploy": "wsk -i action update dbinsert dist/dbinsert.zip --kind nodejs:8",
+    "dev": "wsk -i action invoke dbpinsert --result"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sabre1041/iot-serverless.git"
+  },
+  "author": "Andrew Block",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "dotenv": "^5.0.1",
+    "mongodb": "^3.0.5",
+    "util": "^0.10.3"
+  }
+}

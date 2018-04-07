@@ -20,47 +20,65 @@ objects:
               "name": "Chemical Pump LX-222",
               "location": "Boiler room",
               "topic": "/sf/boiler/pump-lx222",
-              "geofence_latitude": "37.784212",
-              "geofence_longitude": "-122.401558"
+              "center_latitude": "37.784172",
+              "center_longitude": "-122.401558",
+              "geofence_radius": "4.4"
           },
           {
               "name": "Blow down separator valve VL-1",
               "location": "Boiler room",
-              "topic": "/sf/boiler/separator-vl-1"
+              "topic": "/sf/boiler/separator-vl-1",
+              "center_latitude": "37.784160",
+              "center_longitude": "-122.401562",
+              "geofence_radius": "1.0"
           },
           {
               "name": "Surface blow down controller",
               "location": "Boiler room",
-              "topic": "/sf/boiler/controller"
+              "topic": "/sf/boiler/controller",
+              "center_latitude": "37.784160",
+              "center_longitude": "-122.401562",
+              "geofence_radius": "1.0"
           },
           {
               "name": "Condensate duplex pump",
               "location": "Boiler room",
               "topic": "/sf/boiler/cond-pump",
-              "geofence_latitude": "37.784158",
-              "geofence_longitude": "-122.401598"
+              "center_latitude": "37.784158",
+              "center_longitude": "-122.401558",
+              "geofence_radius": "4.4"
           },
           {
               "name": "Robotic arm joint RT-011",
               "location": "Assembly section",
-              "topic": "/sf/assembly/robotic-joint"
+              "topic": "/sf/assembly/robotic-joint",
+              "center_latitude": "37.784262",
+              "center_longitude": "-122.401550",
+              "geofence_radius": "1.0"
           },
           {
               "name": "Teledyne DALSA Camera",
               "location": "Assembly section",
-              "topic": "/sf/assembly/camera"
+              "topic": "/sf/assembly/camera",
+              "center_latitude": "37.784264",
+              "center_longitude": "-122.401550",
+              "geofence_radius": "1.0"
           },
           {
               "name": "Lighting control unit RT-SD-1000",
               "location": "Warehouse",
-              "topic": "/sf/warehouse/lighting-control"
+              "topic": "/sf/warehouse/lighting-control",
+              "center_latitude": "37.784270",
+              "center_longitude": "-122.401540",
+              "geofence_radius": "3.5"
           },
           {
               "name": "DIN Rail power supply 240-24",
               "location": "Warehouse",
               "topic": "/sf/warehouse/power-supply",
-              "geofence_latitude": "37.784351",
-              "geofence_longitude": "-122.401542"
+              "center_latitude": "37.784271",
+              "center_longitude": "-122.401542",
+              "geofence_radius": "1.0"
           }
       ]
 - apiVersion: batch/v1

@@ -4,7 +4,7 @@ require('dotenv').config({path: path.join(__dirname, '.env')});
 
 var MongoClient = require('mongodb').MongoClient;
 
-function enrich(params) {
+function dbinsert(params) {
 
     // Validate Parameters
     var mongoDbUser = process.env.MONGODB_USER;
@@ -19,9 +19,6 @@ function enrich(params) {
     var url = format('mongodb://%s:%s@%s:27017/%s', mongoDbUser, mongoDbPassword, mongoDbHost, mongoDbDatabase);
 
 
-    var topic = params.topic;
-
-    if(topic) {
       return new Promise(function(resolve, reject) {
 
         MongoClient.connect(url, function(err, client){
@@ -32,39 +29,28 @@ function enrich(params) {
             return;
           }
 
+          console.log("Connected to Database. About to Insert");
+
           var db = client.db(mongoDbDatabase);
 
-          db.collection('assets').findOne({"topic": topic}, function (err, doc) {
+          var result = Object.assign(params, {"date": new Date()})
+
+          db.collection('results').insertOne(result, function (err, res) {
             if(err) {
               console.error(err);
               reject({"error":err.message});
               return;
             }
             
-            if(doc) {
-                for(index in doc) {
-                  if(index != "_id") {
-                    params[index] = doc[index];
-                  }
-                }
-            }
-            else {
-                console.log("No Asset Found with topic '%s'", topic);
-            }
+            console.log("Document Inserted With ID %v")
             client.close();
-            resolve(params);
-        });
-
+            resolve({"result": "ok"});
+          });
 
         });
 
       });
-    }
-    else {
-      console.log("Topic Has Not Been Provided")
-      return params;
-    }
     
   };
 
-exports.main = enrich;
+exports.main = dbinsert;

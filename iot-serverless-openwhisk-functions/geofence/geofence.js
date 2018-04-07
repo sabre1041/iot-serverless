@@ -26,6 +26,7 @@ function main(params) {
     }
     else {
       console.log("Required Parameters for Geofence Calculation Not Provided");
+      return {error: "Required Parameters for Geofence Calculation Not Provided"}
     }
 
     return params;

@@ -132,10 +132,62 @@ Several actions are available as function to perform a specific functionality:
     popd 
     ```
 
-4. Create a Sequence Action
+4. Create an action to insert into the database
+
+    1. Install dependencies
 
     ```
-    wsk -i action update processAsset --sequence formatInput,enricher,geofence
+    pushd  iot-serverless-openwhisk-functions/dbinsert
+    npm install
+    ```
+    2. Configure environment variables
+
+    The action makes use of environment variables that describe how to connect to the mongodb instance. The function will utilize a file called `.env` within the project folder. A template of this file called [example.env](iot-serverless-openwhisk-functions/dbinsert/example.env) is available to manually provide the set of properties. The required values are sourced from the mongodb secret that was created when the mongodb instance was provisioned.
+
+    Copy the template file to create the required file:
+
+    ```
+    cp example.env .env
+    ```
+
+    The following values must be configured:
+
+    * MongoDB Username
+    * MondoDB Password
+    * MongoDB Database
+
+    These values are stored in the mongodb secret which can be seen by running the following command
+
+    ```
+    oc describe secret mongodb -n iot-serverless
+    ```
+
+    Underneath _Data_, notice the keys defined within the secret which we can utilize.
+
+    To obtain a particular value, execute the following command:
+
+    ```
+    oc get secrets mongodb -o jsonpath='{.data.<key>}' -n iot-serverless | base64 -d
+    ```
+
+    Replace `<key>` with the particular key from the mongodb secret (such as database-name).
+
+    Note: When running on OSX, you will need to modify the `base64` command above to be `base64 -D`
+
+    Update the `.env` file with the decoded values
+
+    3. Package and deploy the function
+
+    ```
+    npm run package
+    npm run deploy
+    popd 
+    ```
+
+5. Create a Sequence Action
+
+    ```
+    wsk -i action update processAsset --sequence formatInput,enricher,geofence,dbinsert
     ```
 
 
