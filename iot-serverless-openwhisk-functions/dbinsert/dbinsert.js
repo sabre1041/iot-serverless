@@ -42,7 +42,7 @@ function dbinsert(params) {
               return;
             }
             
-            console.log("Document Inserted With ID %v")
+            console.log("Document Inserted!");
             client.close();
             resolve({"result": "ok"});
           });
