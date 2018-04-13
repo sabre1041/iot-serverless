@@ -1,0 +1,4 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://iot-serverless:iot-serverless@localhost:27017/iot-serverless
