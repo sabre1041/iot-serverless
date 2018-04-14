@@ -81,7 +81,7 @@ public class Asset {
 	public void setGeofenceRadius(String geofenceRadius) {
 		this.geofenceRadius = geofenceRadius;
 	}
-	public int isAlert() {
+	public int getAlert() {
 		return alert;
 	}
 	public void setAlert(int alert) {
