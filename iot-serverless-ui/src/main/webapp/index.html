@@ -1298,6 +1298,9 @@
           mapTypeId: 'terrain'
         });
 
+        loadAssets(map);
+
+        /*
         // Construct the circle for each value in citymap.
         // Note: We scale the area of the circle based on the population.
         for (var city in citymap) {
@@ -1313,11 +1316,10 @@
             radius: citymap[city].fence
           });
         }
+        */
       }
 
       </script>
-
-      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCW9cyOLKoVfgHdWkpYARyeEDDfbNxYJfg&callback=initMap"></script>
 
     </div>
   </div>
@@ -1386,6 +1388,6 @@
   });
 </script>
 
-
+<script src="js/iot-serverless.js"></script>
   </body>
 </html>
