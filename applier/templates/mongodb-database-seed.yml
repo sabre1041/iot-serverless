@@ -20,17 +20,17 @@ objects:
               "name": "Chemical Pump LX-222",
               "location": "Boiler room",
               "topic": "/sf/boiler/pump-lx222",
-              "center_latitude": "37.784172",
-              "center_longitude": "-122.401558",
-              "geofence_radius": "4.4",
+              "center_latitude": "37.784202",
+              "center_longitude": "-122.401858",
+              "geofence_radius": "3.0",
               "picture": "Chemical-Pump.jpg"
           },
           {
               "name": "Blow down separator valve VL-1",
               "location": "Boiler room",
               "topic": "/sf/boiler/separator-vl-1",
-              "center_latitude": "37.784160",
-              "center_longitude": "-122.401562",
+              "center_latitude": "37.784215",
+              "center_longitude": "-122.401632",
               "geofence_radius": "1.0",
               "picture": "Blowdown-Valve.jpg"
           },
@@ -38,8 +38,8 @@ objects:
               "name": "Surface blow down controller",
               "location": "Boiler room",
               "topic": "/sf/boiler/controller",
-              "center_latitude": "37.784160",
-              "center_longitude": "-122.401562",
+              "center_latitude": "37.784237",
+              "center_longitude": "-122.401410",
               "geofence_radius": "1.0",
               "picture": "Blowdown-Controller.jpg"
           },
@@ -47,17 +47,17 @@ objects:
               "name": "Condensate duplex pump",
               "location": "Boiler room",
               "topic": "/sf/boiler/cond-pump",
-              "center_latitude": "37.784158",
-              "center_longitude": "-122.401558",
-              "geofence_radius": "4.4",
+              "center_latitude": "37.784269",
+              "center_longitude": "-122.401302",
+              "geofence_radius": "3.0",
               "picture": "Condensate-Pump.jpg"
           },
           {
               "name": "Robotic arm joint RT-011",
               "location": "Assembly section",
               "topic": "/sf/assembly/robotic-joint",
-              "center_latitude": "37.784262",
-              "center_longitude": "-122.401550",
+              "center_latitude": "37.784115",
+              "center_longitude": "-122.401380",
               "geofence_radius": "1.0",
               "picture": "Robotic-Arm.jpg"
           },
@@ -65,8 +65,8 @@ objects:
               "name": "Teledyne DALSA Camera",
               "location": "Assembly section",
               "topic": "/sf/assembly/camera",
-              "center_latitude": "37.784264",
-              "center_longitude": "-122.401550",
+              "center_latitude": "37.784312",
+              "center_longitude": "-122.401241",
               "geofence_radius": "1.0",
               "picture": "Teledyne-Dalsa.jpg"
           },
@@ -74,17 +74,17 @@ objects:
               "name": "Lighting control unit RT-SD-1000",
               "location": "Warehouse",
               "topic": "/sf/warehouse/lighting-control",
-              "center_latitude": "37.784270",
-              "center_longitude": "-122.401540",
-              "geofence_radius": "3.5",
+              "center_latitude": "37.784335",
+              "center_longitude": "-122.401159",
+              "geofence_radius": "4.0",
               "picture": "Lighting-Control.JPG"
           },
           {
               "name": "DIN Rail power supply 240-24",
               "location": "Warehouse",
               "topic": "/sf/warehouse/power-supply",
-              "center_latitude": "37.784271",
-              "center_longitude": "-122.401542",
+              "center_latitude": "37.784393",
+              "center_longitude": "-122.401399",
               "geofence_radius": "1.0",
               "picture": "DIN-Rail.jpg"
           }
@@ -94,9 +94,9 @@ objects:
   metadata:
     name: ${APPLICATION_NAME}-${RANDOM_VALUE}
   spec:
-    parallelism: 1    
-    completions: 1    
-    template:         
+    parallelism: 1
+    completions: 1
+    template:
       metadata:
         name: ${APPLICATION_NAME}
       spec:
@@ -155,7 +155,7 @@ objects:
         volumes:
           - name: seed-volume
             configMap:
-              name: "${SEED_CONFIGMAP}"     
+              name: "${SEED_CONFIGMAP}"
 parameters:
 - description: The name for the application.
   name: APPLICATION_NAME
