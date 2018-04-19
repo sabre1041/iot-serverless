@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: ui-build
+metadata:
+  annotations:
+    description: Build the UI Image
+    iconClass: icon-java
+    tags: java
+  name: ui-build
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    labels:
+      application: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    labels:
+      application: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${APPLICATION_NAME}:latest
+    source:
+      contextDir: ${CONTEXT_DIR}
+      git:
+        ref: ${SOURCE_REPOSITORY_REF}
+        uri: ${SOURCE_REPOSITORY_URL}
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: ${BASE_IMAGESTREAMTAG}
+          namespace: ${BASE_IMAGESTREAM_NAMESPACE}
+      type: Source
+    triggers:
+    - imageChange: {}
+      type: ImageChange
+    - type: ConfigChange
+parameters:
+- description: The name for the application.
+  name: APPLICATION_NAME
+  required: true
+  value: ui
+- description: Git source URI for application
+  name: SOURCE_REPOSITORY_URL
+  required: true
+  value: https://github.com/sabre1041/iot-serverless
+- description: Git branch/tag reference
+  name: SOURCE_REPOSITORY_REF
+  required: false
+  value: master
+- description: Path within Git project to build; empty for root project directory.
+  name: CONTEXT_DIR
+  required: false
+  value: iot-serverless-ui
+- description: Base ImageStream Tag
+  name: BASE_IMAGESTREAMTAG
+  required: true
+  value: redhat-openjdk18-openshift:1.2
+- description: Base ImageStream Namespace
+  name: BASE_IMAGESTREAM_NAMESPACE
+  required: true
+  value: openshift

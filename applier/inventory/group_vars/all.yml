@@ -34,6 +34,12 @@
       namespace: iot-serverless
       tags:
         - sensor
+    - name: "deploy-ui"
+      template: "{{ inventory_dir }}/../templates/ui-deployment.yml"
+      params: "{{ inventory_dir }}/../params/ui-deployment"
+      namespace: iot-serverless
+      tags:
+        - ui
   - object: builds
     content:
       - name: "build-mqtt-provider"
@@ -48,6 +54,12 @@
         namespace: iot-serverless
         tags:
           - sensor
+      - name: "build-ui"
+        template: "{{ inventory_dir }}/../templates/ui-build.yml"
+        params: "{{ inventory_dir }}/../params/ui-build"
+        namespace: iot-serverless
+        tags:
+          - ui
   - object: jobs
     content:
       - name: "mongodb-database-seed"
