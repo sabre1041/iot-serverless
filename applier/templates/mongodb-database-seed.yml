@@ -41,7 +41,7 @@ objects:
               "center_latitude": "37.784160",
               "center_longitude": "-122.401562",
               "geofence_radius": "1.0",
-              ""picture": "Blowdown-Controller.jpg"
+              "picture": "Blowdown-Controller.jpg"
           },
           {
               "name": "Condensate duplex pump",
