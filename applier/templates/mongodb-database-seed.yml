@@ -22,7 +22,8 @@ objects:
               "topic": "/sf/boiler/pump-lx222",
               "center_latitude": "37.784172",
               "center_longitude": "-122.401558",
-              "geofence_radius": "4.4"
+              "geofence_radius": "4.4",
+              "picture": "Chemical-Pump.jpg"
           },
           {
               "name": "Blow down separator valve VL-1",
@@ -30,7 +31,8 @@ objects:
               "topic": "/sf/boiler/separator-vl-1",
               "center_latitude": "37.784160",
               "center_longitude": "-122.401562",
-              "geofence_radius": "1.0"
+              "geofence_radius": "1.0",
+              "picture": "Blowdown-Valve.jpg"
           },
           {
               "name": "Surface blow down controller",
@@ -38,7 +40,8 @@ objects:
               "topic": "/sf/boiler/controller",
               "center_latitude": "37.784160",
               "center_longitude": "-122.401562",
-              "geofence_radius": "1.0"
+              "geofence_radius": "1.0",
+              ""picture": "Blowdown-Controller.jpg"
           },
           {
               "name": "Condensate duplex pump",
@@ -46,7 +49,8 @@ objects:
               "topic": "/sf/boiler/cond-pump",
               "center_latitude": "37.784158",
               "center_longitude": "-122.401558",
-              "geofence_radius": "4.4"
+              "geofence_radius": "4.4",
+              "picture": "Condensate-Pump.jpg"
           },
           {
               "name": "Robotic arm joint RT-011",
@@ -54,7 +58,8 @@ objects:
               "topic": "/sf/assembly/robotic-joint",
               "center_latitude": "37.784262",
               "center_longitude": "-122.401550",
-              "geofence_radius": "1.0"
+              "geofence_radius": "1.0",
+              "picture": "Robotic-Arm.jpg"
           },
           {
               "name": "Teledyne DALSA Camera",
@@ -62,7 +67,8 @@ objects:
               "topic": "/sf/assembly/camera",
               "center_latitude": "37.784264",
               "center_longitude": "-122.401550",
-              "geofence_radius": "1.0"
+              "geofence_radius": "1.0",
+              "picture": "Teledyne-Dalsa.jpg"
           },
           {
               "name": "Lighting control unit RT-SD-1000",
@@ -70,7 +76,8 @@ objects:
               "topic": "/sf/warehouse/lighting-control",
               "center_latitude": "37.784270",
               "center_longitude": "-122.401540",
-              "geofence_radius": "3.5"
+              "geofence_radius": "3.5",
+              "picture": "Lighting-Control.JPG"
           },
           {
               "name": "DIN Rail power supply 240-24",
@@ -78,7 +85,8 @@ objects:
               "topic": "/sf/warehouse/power-supply",
               "center_latitude": "37.784271",
               "center_longitude": "-122.401542",
-              "geofence_radius": "1.0"
+              "geofence_radius": "1.0",
+              "picture": "DIN-Rail.jpg"
           }
       ]
 - apiVersion: batch/v1
