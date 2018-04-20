@@ -44,6 +44,12 @@ function displayAsset(asset) {
     else {
         $(".asset-within-fence").html("Within Fence: No");
     }
+    $(".asset-name").html(asset.name);
+    $(".asset-location").html(asset.location);
+
+    var img = $('<img style="height: 150px; width 300px" class="navbar-brand-icon asset-image" />');
+    img.attr("src", "img/"+asset.picture);
+    $(".asset-image").replaceWith(img)
 }
 
 function drawCircle(asset, map) {

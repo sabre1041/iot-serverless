@@ -56,6 +56,7 @@ public class AssetController {
 					.last("longitude").as("longitude")
 					.last("center_longitude").as("center_longitude")
 					.last("center_latitude").as("center_latitude")
+					.last("picture").as("picture")
 					.last("alert").as("alert");
 		
 		ProjectionOperation project = project()
@@ -69,6 +70,7 @@ public class AssetController {
 				.andExpression("longitude").as("longitude")
 				.andExpression("center_longitude").as("center_longitude")
 				.andExpression("center_latitude").as("center_latitude")
+				.andExpression("picture").as("picture")
 				.andExpression("alert").as("alert");
 
 		Aggregation aggregation = newAggregation(sort, group, project);

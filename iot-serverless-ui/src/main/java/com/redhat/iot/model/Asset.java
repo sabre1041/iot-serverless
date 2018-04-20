@@ -41,6 +41,9 @@ public class Asset {
 	@Field(value="center_longitude")
 	private String centerLongitude;
 	
+	@Field(value="picture")
+	private String picture;
+
 	@DateTimeFormat(iso=ISO.DATE_TIME)
 	@Field(value="date")
 	private Date date;
@@ -104,6 +107,12 @@ public class Asset {
 	}
 	public void setCenterLongitude(String centerLongitude) {
 		this.centerLongitude = centerLongitude;
+	}
+	public String getPicture() {
+		return picture;
+	}
+	public void setPicture(String picture) {
+		this.picture = picture;
 	}
 	public Date getDate() {
 		return date;
