@@ -1,4 +1,5 @@
 var circle;
+var selectedMarker;
 
 $( document ).ready(function() {
     var script = document.createElement("script");
@@ -13,10 +14,13 @@ function loadAssets(map) {
         success: function(data) {
             $.each(data, function(key, asset) {
 
+                var icon = getIcon(asset.alert, false);
+
                 marker = new google.maps.Marker({
                     map: map,
                     animation: google.maps.Animation.DROP,
                     position: {lat: parseFloat(asset.latitude), lng: parseFloat(asset.longitude)},
+                    icon: icon,
                     title: asset.name
                   });
 
@@ -25,6 +29,7 @@ function loadAssets(map) {
                 google.maps.event.addListener(marker, "click", function () {
                     displayAsset(this.customInfo);
                     drawCircle(this.customInfo, map);
+                    selectMarker(this, map);
                 });
             });
         },
@@ -70,4 +75,41 @@ function drawCircle(asset, map) {
 
       circle.setMap(map);
 
+}
+
+function selectMarker(marker, map) {
+
+    if(selectedMarker != null) {
+        selectedMarker.setIcon(getIcon(selectedMarker.customInfo.alert, false));
+    }
+
+    marker.setIcon(getIcon(marker.customInfo.alert, true));
+
+    selectedMarker = marker;
+
+}
+
+function getIcon(alert, selected) {
+
+    var iconUrl;
+    var size;
+
+    if(alert == 1) {
+        iconUrl = "/img/icon-alert.svg";
+    }
+    else {
+        iconUrl = "/img/icon-normal.svg";
+    }
+
+    if(selected) {
+        size = new google.maps.Size(100, 100);
+    }
+    else {
+        size = new google.maps.Size(35, 35);
+    }
+
+    return {
+        url: iconUrl,
+        scaledSize: size
+    };
 }
