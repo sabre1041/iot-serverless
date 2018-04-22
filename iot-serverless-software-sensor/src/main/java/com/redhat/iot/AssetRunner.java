@@ -16,10 +16,8 @@ public class AssetRunner implements Runnable {
 	private final Asset asset;
 	private final AssetCallback assetCallback;
 	private volatile int completedIterations = 0;
-//	private Double currentLatitude;
-//	private Double currentLongitude;
 	private BigDecimal currentLatitude;
-	private BigDecimal currentLatitude;
+	private BigDecimal currentLongitude;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AssetRunner.class);
 
@@ -55,8 +53,8 @@ public class AssetRunner implements Runnable {
 				LOGGER.error(e.getMessage(), e);
 			}
 
-			currentLatitude += asset.getIterationChangeLatitude();
-			currentLongitude += asset.getIterationChangeLongitude();
+			currentLatitude = currentLatitude.add(asset.getIterationChangeLatitude());
+			currentLongitude = currentLongitude.add(asset.getIterationChangeLongitude());
 			completedIterations++;
 
 			assetCallback.assetTaskComplete(this);

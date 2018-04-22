@@ -1,5 +1,7 @@
 package com.redhat.iot.model;
 
+import java.math.BigDecimal;
+
 public class Asset {
 	
 	private String name;
@@ -9,8 +11,8 @@ public class Asset {
 	private String longitude;
 	private long frequency;
 	private int iterations;
-	private Double iterationChangeLatitude;
-	private Double iterationChangeLongitude;
+	private BigDecimal iterationChangeLatitude;
+	private BigDecimal iterationChangeLongitude;
 	
 	public String getName() {
 		return name;
@@ -54,16 +56,16 @@ public class Asset {
 	public void setIterations(int iterations) {
 		this.iterations = iterations;
 	}
-	public Double getIterationChangeLatitude() {
+	public BigDecimal getIterationChangeLatitude() {
 		return iterationChangeLatitude;
 	}
-	public void setIterationChangeLatitude(Double iterationChangeLatitude) {
+	public void setIterationChangeLatitude(BigDecimal iterationChangeLatitude) {
 		this.iterationChangeLatitude = iterationChangeLatitude;
 	}
-	public Double getIterationChangeLongitude() {
+	public BigDecimal getIterationChangeLongitude() {
 		return iterationChangeLongitude;
 	}
-	public void setIterationChangeLongitude(Double iterationChangeLongitude) {
+	public void setIterationChangeLongitude(BigDecimal iterationChangeLongitude) {
 		this.iterationChangeLongitude = iterationChangeLongitude;
 	}
 	
