@@ -7,7 +7,7 @@ assets:
   - name: Chemical Pump LX-222
     location: Boiler room
     topic: /sf/boiler/pump-lx222
-    latitude: 37.784172
+    latitude: 37.784202
     longitude: -122.401858
     frequency: 5000
     iterations: 10
@@ -35,7 +35,7 @@ assets:
     location: Boiler room
     topic: /sf/boiler/cond-pump
     latitude: 37.784269
-    longitude: -122.401322
+    longitude: -122.401302
     frequency: 5000
     iterations: 10
     iterationChangeLatitude: 0.0

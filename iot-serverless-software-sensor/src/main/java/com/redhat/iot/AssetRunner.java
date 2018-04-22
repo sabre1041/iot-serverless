@@ -8,40 +8,44 @@ import org.slf4j.LoggerFactory;
 
 import com.redhat.iot.model.Asset;
 
+import java.math.BigDecimal;
+
 public class AssetRunner implements Runnable {
 
 	private volatile MqttClient mqttClient;
 	private final Asset asset;
 	private final AssetCallback assetCallback;
 	private volatile int completedIterations = 0;
-	private Double currentLatitude;
-	private Double currentLongitude;
-	
+//	private Double currentLatitude;
+//	private Double currentLongitude;
+	private BigDecimal currentLatitude;
+	private BigDecimal currentLatitude;
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(AssetRunner.class);
-	
+
 	public AssetRunner(final MqttClient mqttClient, final Asset asset, final AssetCallback assetCallback) {
 		this.mqttClient = mqttClient;
 		this.asset = asset;
 		this.assetCallback = assetCallback;
 	}
-	
+
 	@Override
 	public void run() {
-				
+
 		if(currentLatitude == null) {
-			currentLatitude = new Double(asset.getLatitude());
+			currentLatitude = new BigDecimal(asset.getLatitude());
 		}
 		if(currentLongitude == null) {
-			currentLongitude = new Double(asset.getLongitude());
+			currentLongitude = new BigDecimal(asset.getLongitude());
 		}
-		
+
 		LOGGER.info("Running Scheduled Task for Asset: {} - Iteration: {} - Latitude: {} - Longitude: {}", asset.getName(), completedIterations+1, currentLatitude, currentLongitude);
-		
+
 		if(mqttClient != null && mqttClient.isConnected()) {
-			
+
 			String messageContent = String.format("%s %s", currentLatitude, currentLongitude);
-			
-			
+
+
 			try {
 				MqttMessage message = new MqttMessage(messageContent.getBytes());
 				message.setQos(2);
@@ -50,23 +54,23 @@ public class AssetRunner implements Runnable {
 			catch(MqttException e) {
 				LOGGER.error(e.getMessage(), e);
 			}
-			
+
 			currentLatitude += asset.getIterationChangeLatitude();
-			currentLongitude += asset.getIterationChangeLongitude();		
+			currentLongitude += asset.getIterationChangeLongitude();
 			completedIterations++;
-			
-			assetCallback.assetTaskComplete(this);	
+
+			assetCallback.assetTaskComplete(this);
 		}
 		else {
 			LOGGER.warn("MQTT Client is Not Connected. Skipping...");
 		}
-		
+
 	}
-	
+
 	public Asset getAsset() {
 		return asset;
 	}
-	
+
 	public int getCompletedIterations() {
 		return completedIterations;
 	}
