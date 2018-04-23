@@ -10,6 +10,7 @@ assets:
     latitude: 37.784202
     longitude: -122.401858
     frequency: 5000
+    initialDelay: 0
     iterations: 10
     iterationChangeLatitude: 0.000008
     iterationChangeLongitude: 0.0
@@ -18,6 +19,7 @@ assets:
     topic: /sf/boiler/separator-vl-1
     latitude: 37.784215
     longitude: -122.401632
+    initialDelay: 0
     frequency: 0
     iterations: 1
     iterationChangeLatitude: 0.0
@@ -28,6 +30,7 @@ assets:
     latitude: 37.784237
     longitude: -122.401410
     frequency: 0
+    initialDelay: 0
     iterations: 1
     iterationChangeLatitude: 0.0
     iterationChangeLongitude: 0.0
@@ -38,6 +41,7 @@ assets:
     longitude: -122.401302
     frequency: 5000
     iterations: 10
+    initialDelay: 0
     iterationChangeLatitude: 0.0
     iterationChangeLongitude: -0.000005
   - name: Robotic arm joint RT-011
@@ -46,6 +50,7 @@ assets:
     latitude: 37.784115
     longitude: -122.401380
     frequency: 0
+    initialDelay: 0
     iterations: 1
     iterationChangeLatitude: 0.0
     iterationChangeLongitude: 0.0
@@ -55,6 +60,7 @@ assets:
     latitude: 37.784312
     longitude: -122.401241
     frequency: 0
+    initialDelay: 0
     iterations: 1
     iterationChangeLatitude: 0.0
     iterationChangeLongitude: 0.0
@@ -64,6 +70,7 @@ assets:
     latitude: 37.784335
     longitude: -122.401159
     frequency: 5000
+    initialDelay: 0
     iterations: 10
     iterationChangeLatitude: 0.000008
     iterationChangeLongitude: 0.0
@@ -73,6 +80,7 @@ assets:
     latitude: 37.784393
     longitude: -122.401399
     frequency: 0
+    initialDelay: 0
     iterations: 1
     iterationChangeLatitude: 0.0
     iterationChangeLongitude: 0.0

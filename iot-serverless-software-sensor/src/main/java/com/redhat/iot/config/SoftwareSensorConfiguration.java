@@ -40,7 +40,7 @@ public class SoftwareSensorConfiguration implements SchedulingConfigurer {
 			long frequency = asset.getFrequency();
 			
 			if(frequency <= 0) {
-				taskRegistrar.getScheduler().schedule(assetRunner, new Date());
+				taskRegistrar.getScheduler().schedule(assetRunner, new Date(System.currentTimeMillis() + asset.getInitialDelay()));
 			}
 			else {
 				taskRegistrar.addFixedRateTask(assetRunner, frequency);

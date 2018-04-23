@@ -10,6 +10,7 @@ public class Asset {
 	private String latitude;
 	private String longitude;
 	private long frequency;
+	private long initialDelay;
 	private int iterations;
 	private BigDecimal iterationChangeLatitude;
 	private BigDecimal iterationChangeLongitude;
@@ -49,6 +50,12 @@ public class Asset {
 	}
 	public void setFrequency(int frequency) {
 		this.frequency = frequency;
+	}
+	public long getInitialDelay() {
+		return initialDelay;
+	}
+	public void setInitialDelay(long initialDelay) {
+		this.initialDelay = initialDelay;
 	}
 	public int getIterations() {
 		return iterations;
