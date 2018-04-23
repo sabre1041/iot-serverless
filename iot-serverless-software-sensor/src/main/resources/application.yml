@@ -10,16 +10,16 @@ assets:
     latitude: 37.784202
     longitude: -122.401858
     frequency: 5000
-    initialDelay: 0
-    iterations: 10
-    iterationChangeLatitude: 0.000008
+    initialDelay: 1000
+    iterations: 5
+    iterationChangeLatitude: 0.000016
     iterationChangeLongitude: 0.0
   - name: Blow down separator valve VL-1
     location: Boiler room
     topic: /sf/boiler/separator-vl-1
     latitude: 37.784215
     longitude: -122.401632
-    initialDelay: 0
+    initialDelay: 2000
     frequency: 0
     iterations: 1
     iterationChangeLatitude: 0.0
@@ -30,7 +30,7 @@ assets:
     latitude: 37.784237
     longitude: -122.401410
     frequency: 0
-    initialDelay: 0
+    initialDelay: 3000
     iterations: 1
     iterationChangeLatitude: 0.0
     iterationChangeLongitude: 0.0
@@ -40,17 +40,17 @@ assets:
     latitude: 37.784269
     longitude: -122.401302
     frequency: 5000
-    iterations: 10
-    initialDelay: 0
+    iterations: 5
+    initialDelay: 4000
     iterationChangeLatitude: 0.0
-    iterationChangeLongitude: -0.000005
+    iterationChangeLongitude: -0.000010
   - name: Robotic arm joint RT-011
     location: Assembly section
     topic: /sf/assembly/robotic-joint
     latitude: 37.784115
     longitude: -122.401380
     frequency: 0
-    initialDelay: 0
+    initialDelay: 12000
     iterations: 1
     iterationChangeLatitude: 0.0
     iterationChangeLongitude: 0.0
@@ -60,7 +60,7 @@ assets:
     latitude: 37.784312
     longitude: -122.401241
     frequency: 0
-    initialDelay: 0
+    initialDelay: 13000
     iterations: 1
     iterationChangeLatitude: 0.0
     iterationChangeLongitude: 0.0
@@ -70,7 +70,7 @@ assets:
     latitude: 37.784335
     longitude: -122.401159
     frequency: 5000
-    initialDelay: 0
+    initialDelay: 15000
     iterations: 10
     iterationChangeLatitude: 0.000008
     iterationChangeLongitude: 0.0
@@ -80,7 +80,7 @@ assets:
     latitude: 37.784393
     longitude: -122.401399
     frequency: 0
-    initialDelay: 0
+    initialDelay: 20000
     iterations: 1
     iterationChangeLatitude: 0.0
     iterationChangeLongitude: 0.0
