@@ -1,0 +1,1266 @@
+
+= Serverless for IoT lab
+Andrew Block <ablock@redhat.com>, Ishu Verma <iverma@redhat.com>
+:homepage: https://github.com/sabre1041/iot-serverless
+:imagesdir: images
+:icons: font
+:source-highlighter: prettify
+
+
+== Lab Workflow
+. Technology Overview
+.. What is Containers/OpenShift?
+.. What is Serverless
+.. What are Functions/OpenWhisk?
+. Introduction to Use Case
+.. IoT Overview
+.. Smart Asset Tracking
+. Introduction to Working Environments
+.. Login to Ravello
+.. Login to OpenShift
+. Prepare the Lab Environment
+.. Create iot-serverless Project
+.. Deploy Mongodb
+.. Deploy the Database Seed Job
+... Introduction to OpenShift Jobs
+... Deploy Seed Job
+... Explore the Results
+.... Go into mongodb and explore the collection
+. Deploy OpenWhisk
+.. Use template to deploy OpenWhisk
+.. Validate Installation/Configuration
+... Configure wsk binary
+. Exploring OpenWhisk Actions
+.. What is an action?
+... Introduction to actions
+... What languages can use?
+.. Developing an simple JavaScript action
+... Incrementally develop the formatInput action
+... Use wsk commands to explore actions and activations
+.. Introduction to Triggers
+... Create a cron based trigger to invoke the javascript action
+... Watch activations from triggered actions
+... Delete trigger
+.. Developing a NodeJS Action
+... Walk through the enricher
+.... Create .env file
+... Walk through
+.. Chaining actions
+... Chain the formatInput and enricher function
+... Invoke chained action
+. Organizing OpenWhisk Resources
+.. Creating Packages
+.. Delete existing actions
+.. Add actions and sequence to package
+. Geofence Use Case
+.. Introduction to Geofence
+.. Overview of geofence mathematical formula
+.. Create geofence action
+.. Testing geofence action
+. Inserting Records into the database
+... Copy .env file from enricher
+... Deploy action
+. Tieing all the functions together
+.. Update sequence action
+.. Testing sequence actions end to end
+.. View data in database
+.. Drop Table to cleanse values
+. Deploying IoT Components
+.. Common IoT transports
+.. Deploying AMQ Broker
+... Support for MQTT Protocol Included
+. Connecting into OpenWhisk
+.. Introduction to Feeds
+.. Relationship to triggers
+.. Introduction to Providers
+.. Deploying MQTT Provider
+.. Create rule
+. Software Sensor
+.. Introduce software sensor
+.. Deploy software sensor
+.. Scaling up software sensor
+. Visualizing Data
+.. Goal: Tracing through the entire data flow
+.. View topics/connections in AMQ Java Console
+.. Deploy UI Application
+.. View data in UI application
+. Conclusion and next steps
+
+= Technology Overview
+
+== Serverless
+Serverless refers to the concept of building and running applications that do not require server management. Serverless allows for a finer-grained deployment model where applications, bundled as one or more functions, are uploaded to a platform and then executed, scaled, and billed in response to the exact demand needed at that moment. Developers using serverless no longer need to spend time and resources on server provisioning, maintenance, updates, scaling, and capacity planning.
+
+NOTE: Servers are still required to run a serverless platform. The provider will need to manage servers (or virtual machines or containers) and deploy the serverless platform for an external or internal customers.
+
+== Serverless use cases
+Serverless approach is a good choice when the workload is:
+- Asynchronous, concurrent, easy to parallelize into independent units of work
+- Infrequent or has sporadic demand, with large, unpredictable variance in scaling requirements
+- Stateless, ephemeral, without a major need for instantaneous cold start time
+- Highly dynamic in terms of changing business requirements that drive a need for accelerated developer velocity
+
+== Function as a Service (FaaS)
+FaaS is a type of serverless computing that typically provides event-driven computing. Developers run and manage application code with functions that are triggered by events. Developers deploy small units of code to the FaaS, which are executed as needed as discrete actions, scaling without the need to manage servers or any other underlying infrastructure.
+
+Popularized by AWS Lambda, there are several other FaaS offerings in the market Azure Functions, IBM Cloud Functions, Google Cloud Functions etc.
+
+Apache OpenWhisk is a serverless, open source cloud platform that executes functions in response to events. OpenWhisk can be deployed on public cloud, premises or a combination of both (hybrid).
+
+== Using serverless for IoT
+Internet of Things (IoT) is expected to generate a massive and diverse range of data types presenting a unique challenges for back end services.  The back end services must be able to quickly respond and scale in response to sudden influx of messages. Serverless functions can efficiently manage and filter messages from IoT devices. They can both scale elastically and shield other services downstream from the load. Some of the examples of using serverless for IoT include:
+- Executing logic in response to device data values
+- Performing analytics on IoT sensor messages
+- Handling stream processing
+- Serving machine learning and AI models
+
+== Deploying your own serverless solution
+In this lab, an IoT solution will be built with Red Hat OpenShift Container Platform and serverless architecture to execute on-demand functions in response to IoT events. Main components of the lab include setting up Apache OpenWhisk, building functions and deploying these functions to OpenWhisk.
+
+Reference:
+https://github.com/cncf/wg-serverless/tree/master/whitepaper
+
+== Introduction to Use Case
+
+=== IoT Overview
+
+IDC defines Internet of Things (IoT) as a network of uniquely identifiable end points (or ‘things’) that communicate bi-directionally without human interaction using IP connectivity. For consumers, this could mean ability to control the thermostat, doors, irrigation system from across the world but for businesses, IoT can create new opportunities to connect with customers and partners and achieve operational efficiencies. IoT has potential to transform entire industries from transportation, retail, oil & gas, utilities to stadiums.
+
+Vast numbers of endpoints (smart sensors, GPS devices, transponders, handheld devices), will generate massive volume of data. Once data from millions of devices is collected, it needs to be acted on immediately or transformed, summarized and stored to be acted on later.
+
+=== IoT Use Case
+
+This lab demonstrates how Serverless can be used for IoT use cases that require analytics of IoT device messages. In the use case for this lab, a factory wants to closely monitor critical assets through their lifecycle to improve operational efficiencies.  Each equipment is assigned to a specific area (geofence) in the factory. Equipments advertise their location coordinates (sent over mqtt protocol). This location data is transformed, enhanced and stored in a database for persistent storage using various functions. If an equipment moves outside its geofence, an alert is triggered using another function.
+
+Equipment location is visualized on a geographical map using Google map API. Google Geolocation API is used to show each equipment’s geofence. Map data is dynamically updated with different markers used to indicate if an equipment is within its geofence or not.
+
+
+image::image2.png[Lab Workflow]
+
+= Lab Environment
+
+== Lab Resources
+IoT Serverless project repo provides many of the ready to use resources needed for this lab. Here is the list of project resources that’ll be used for this lab:
+
+*Project location:* https://github.com/sabre1041/iot-serverless
+
+* *Functions* (iot-serverless-openwhisk-functions): OpenWhisk actions to support values transmitted by IoT assets
+* *Applier* (applier): Declarative set of OpenShift resources. Components organized for automated application using the openshift-applier framework.
+* *Software Sensor* (iot-serverless-software-sensor): Simulated software sensor representing IoT assets
+* *Message Feed* (iot-serverless-mqtt-feed): OpenWhisk feed action and provider
+* *Data Visualization* (iot-serverless-ui): UI application to display values transmitted by IoT assets
+
+OpenShift environment for this lab consists of the following systems:
+
+[cols="3",options="header"]
+|=======
+|Hostname              |Internal IP    |Description
+|`bastion.example.com` |`192.168.0.5`  | Bastion host
+|`master.example.com`  |`192.168.0.10` | Master
+|`node01.example.com`  |`192.168.0.11` | Node 01
+|`node02.example.com`  |`192.168.0.12` | Node 02
+|`node03.example.com`  |`192.168.0.13` | Node 03
+|=======
+
+
+== Get GUID
+
+** Point the browser to:  https://www.opentlc.com/guidgrabber/guidgrabber.cgi +
+Lab code: *L1122* +
+Activation key: *iot*
+
+== Access Lab environment
+
+==== *ssh*
+ssh lab-user@workstation-<GUID>.rhpds.opentlc.com
+
+==== *OpenShift web console*
+Point the browser to:
+https://infranode-<GUID>.generic.opentlc.com:8443 +
+User: *admin* +
+Password: *r3dh4t1!*
+
+** *OpenShift CLI* +
+oc login infranode-<GUID>.generic.opentlc.com:8443 +
+User: *admin* +
+Password: *r3dh4t1!*
+
+= Preparing the Lab Environment
+
+Now that the OpenShift and OpenWhisk tooling has been set up, let’s start to build the solution!
+
+* First, create a new project in OpenShift that will be the workspace for the resources being deployed in the lab
+
+[source,bash]
+----
+$ oc new-project iot-serverless --display-name="IoT Serverless" --description="Serverless technologies to manage and process Internet of Things (IoT) assets"
+----
+
+* Add admin user as admin to access the projects with OpenShift web console:
+
+source,bash]
+----
+$ oc adm policy add-role-to-user admin admin
+----
+
+* Next, navigate to the /home/lab-user , clone the lab repository and navigate to the repo iot-serverless:
+
+[source,bash]
+----
+$ cd /home/lab-user
+$ git clone https://github.com/sabre1041/iot-serverless
+$ cd iot-serverless
+----
+
+<Repository walkthrough>
+= Deploying and Populating MongoDB
+
+MongoDB is a popular non relational database (NoSQL). As asset readings are received, their values are stored for for retrieval afterward.
+
+OpenShift provides support for MongoDB and includes templates to streamline the deployment.
+
+* Execute the following command to instantiate the template which will create a new user and set the password to iot-serverless along with a database also called iotserverless.
+
+[source,bash]
+----
+$ oc process -p MONGODB_USER=iot-serverless -p MONGODB_PASSWORD=iot-serverless MONGODB_DATABASE=iotserverless openshift//mongodb-persistent | oc apply -f-
+----
+In a few moments, the MongoDB database will be running. +
+
+* Confirm that it is running by viewing the list of running pods using the following commands:
+
+[source,bash]
+----
+$ oc get pods
+
+NAME              READY     STATUS    RESTARTS   AGE
+mongodb-1-x75j8   1/1       Running   0          3m
+----
+A READY column indicating 1/1 denotes the service is ready and available
+
+To provide additional information about each of the assets along with supporting later portions of the lab, a MongoDB collection needs to be populated containing these resources. To properly seed the database, an OpenShift job can be used. A job is an OpenShift pod that runs to completion, unlike a ReplicationController which will ensure a set number of replicas are constantly running.
+
+A template is available to seed the database and contains the following resources:
+A ConfigMap containing the values to be added to a newly created collection
+A job that will execute the mongoinport command to import the values contained in the ConfigMap
+
+* From the root of the project, execute the following command:
+
+[source,bash]
+----
+$ oc process -f applier/templates/mongodb-database-seed.yml | oc apply -f-
+----
+The ConfigMap and Job will be created.
+
+* Use the following command to track the state of the job.
+
+[source,bash]
+----
+$ watch oc get pods
+----
+When the pod with the name beginning with “mongodb-database-seed” has a status of “Completed”, hit CTRL+C to exit the “watch” command.
+
+[source,bash]
+----
+NAME                                READY     STATUS      RESTARTS   AGE
+mongodb-1-x75j8                     1/1       Running     0          2h
+mongodb-database-seed-l8lcb-vqc65   0/1       Completed   0          29s
+----
+Let’s view the data that was added to the database by accessing a remote shell into the mongodb pod using the oc rsh command.
+
+* Execute the following command which will obtain the name of the running mongodb pod and start a remote shell session.
+
+[source,bash]
+----
+$ oc rsh $(oc get pods -l=deploymentconfig=mongodb -o 'jsonpath={.items[0].metadata.name}')
+----
+The DeploymentConfig defining the MongoDB application injects a series of environment variables containing the username, password and name of the primary database. +
+
+* Use these environment variables to connect to MongoDB.
+
+[source,bash]
+----
+$ mongo 127.0.0.1:27017/$MONGODB_DATABASE -u $MONGODB_USER -p $MONGODB_PASSWORD
+----
+The mongoimport command created a new collection called assets. +
+
+* Verify the contents of the collection by executing the following command:
+
+[source,bash]
+----
+> db.assets.find()
+----
+If results were returned, Mongodb has been setup and configured successfully.
+
+* Type exit to exit out of the mongodb shell.
+
+* Type exit again to return out of the pod shell.
+
+
+= Deploy OpenWhisk
+OpenWhisk can be deployed using the template provided by OpenWhisk on OpenShift project.
+Each component of OpenWhisk will be running in its own container.
+
+* Create a new project in OpenShift and deploy OpenWhisk:
+
+[source,bash]
+----
+$ oc new-project openwhisk --display-name="OpenWhisk"
+$ oc process -f https://raw.githubusercontent.com/projectodd/openwhisk-openshift/master/persistent-template.yml | oc create -f -
+----
+
+Add admin user as admin to access the projects with OpenShift web console:
+
+[source,bash]
+----
+$ oc adm policy add-role-to-user admin admin -n openwhisk
+----
+
+NOTE: It’ll take a few minutes to deploy the OpenWhisk project.
+
+* Use watch command to monitor the progress:
+
+[source,bash]
+----
+$ watch oc get all
+----
+Once all pods are in the “Running” or “Completed state”, hit CTRL+C to break the “watch” command. +
+
+* Check the status of deployment:
+
+[source,bash]
+----
+
+$ oc get pods
+
+NAME                                          READY     STATUS      RESTARTS   AGE
+alarmprovider-76d5655b8-vpp7s                 1/1       Running     0          1d
+controller-0                                  1/1       Running     2          1d
+couchdb-0                                     1/1       Running     0          1d
+install-catalog-hx8pc                         0/1       Completed   0          1d
+invoker-0                                     1/1       Running     0          1d
+nginx-c6f755db5-q627l                         1/1       Running     0          1d
+preload-openwhisk-runtimes-kfxcj              0/1       Completed   0          1d
+prune-activations-1525060800-n4drp            0/1       Completed   0          19h
+refresh-activations-1525132200-lt4h2          0/1       Completed   0          1m
+strimzi-cluster-controller-69dccbcc97-724ht   1/1       Running     0          1d
+strimzi-openwhisk-kafka-0                     1/1       Running     0          1d
+strimzi-openwhisk-zookeeper-0                 1/1       Running     0          1d
+wskinvoker-00-5-prewarm-nodejs6               1/1       Running     0          18h
+wskinvoker-00-6-prewarm-nodejs6               1/1       Running     0          18h
+----
+
+
+The system is ready when the controller recognizes the invoker as healthy:
+
+[source,bash]
+----
+$ oc logs -f controller-0 | grep "invoker status changed"
+----
+Should result in a message like invoker status changed to 0 -> Healthy
+
+[source,bash]
+----
+[INFO] [#sid_121] [InvokerPool] invoker status changed to 0 -> UnHealthy
+[INFO] [#sid_121] [InvokerPool] invoker status changed to 0 -> Healthy
+----
+
+=== Verify deployment using OpenShift web console
+* Navigate to the following url in the browser:
+
+https://infranode-<GUID>.generic.opentlc.com:8443
+
+TIP: OpenShift web UI access url is provided in the screen splash when you ssh into the system
+
+* Click on the project name (OpenWhisk) in the upper right corner. A successful deployment will look like:
+
+image::image5.png[]
+
+== Configure wsk CLI
+wsk is the cli to interact with OpenWhisk services and has already been downloaded on this system.  wsk needs to be to be configured to be able to interact with OpenWhisk deployment above.
+
+* Use the following commands to configure wsk:
+
+[source,bash]
+----
+$ AUTH_SECRET=$(oc get secret whisk.auth -o yaml | grep "system:" | awk '{print $2}' | base64 --decode)
+$ wsk property set --auth $AUTH_SECRET --apihost $(oc get route/openwhisk --template="{{.spec.host}}")
+----
+Successful configuration of wsk will show following output:
+
+[source,bash]
+----
+$ wsk property set --auth $AUTH_SECRET --apihost $(oc get route/openwhisk --template="{{.spec.host}}")
+ok: whisk auth set. Run 'wsk property get --auth' to see the new value.
+ok: whisk API host set to openwhisk-openwhisk.129.146.92.21.xip.io
+----
+
+IMPORTANT: Use the -i option with wsk to avoid the validation error triggered by the self-signed cert in the nginx service.
+
+=== Validate wsk configuration
+* Use the following command validate wsk is operational:
+
+[source,bash]
+----
+$ wsk -i list
+----
+
+== Creating OpenWhisk Entities
+
+=== Actions
+Actions are functions that encapsulate code to be run on the OpenWhisk platform. An action can be written as a JavaScript, Swift, Python or PHP function, a Java method, any binary-compatible executable including Go programs and custom executables packaged as Docker containers.
+
+Actions can be explicitly invoked, or run in response to an event. Each run of an action results in an activation record that is identified by a unique activation ID. The input to an action and the result of an action are a dictionary of key-value pairs, where the key is a string and the value a valid JSON value. Actions can also be composed of calls to other actions or a defined sequence of actions.
+Developing A Simple JavaScript Action
+
+* To hold the custom assets that we will create during this lab, create a folder called workspace within the project folder.
+
+[source,bash]
+----
+$ mkdir -p /home/cloud-user/iot-serverless/workspace
+----
+First, a simple JavaScript function will be used to illustrate how to create an invoke actions. When invoked, the action will return a “Hello World” style response.
+
+* Create a file called hello_openwhisk.js in the workspace folder with the following content.
+
+.hello_openwhisk.js
+[source,javascript]
+----
+function main() {
+    return {payload: 'Welcome to IoT Serverless Lab!’};
+}
+----
+
+* With the content of the function created, use the wsk tool to create an action called hello_openwhisk
+
+[source,bash]
+----
+$ wsk -i action update hello_openwhisk hello_openwhisk.js
+----
+
+Note: The update subcommand of action performs an upsert. If an action does not exist, one will be created. If an action does exist, it will be updated.
+
+Finally, invoke the action using the following command:
+
+[source,bash]
+----
+$ wsk -i action invoke hello_openwhisk --result
+----
+NOTE: Using the --result flag will cause the command to wait until the function completes and print the result
+
+The following will be printed signaling the successful execution of the action:
+
+[source,javascript]
+----
+{
+    "payload": "Welcome to IoT Serverless Lab!"
+}
+----
+
+==== Working With Action Parameters
+
+Actions can also accept input parameters that can be used to drive the execution. To illustrate this use case, create a new file called topicReplace.js that will contain an action that will replace any periods in a parameter called topic with forward slashes.
+
+[source,JavaScript]
+----
+function main(params) {
+
+    // Format the Topic to replace . with /
+    if(params.topic) {
+      params.topic = params.topic.replace(/[.]/g,'/');
+    }
+
+    return params;
+  }
+----
+NOTE: Notice how the main method now contains a function parameter which will include any input parameters to the function.
+
+* Now, create an action called topicReplace using the following command:
+
+[source,bash]
+----
+$ wsk -i action update topicReplace topicReplace.js
+----
+
+* Parameters can be passed to actions using the --param flag. Verify the action executes correctly by providing a parameter called topic with the content containing periods. The response returned should replace periods with slashes:
+
+[source,bash]
+----
+$ wsk -i action invoke topicReplace --result --param topic "1.2 of 8 is 4"
+----
+
+Feel free to try different permutations of the parameters and their values. Note the parameters is only modified if the topic parameter is used and contains a period.
+
+== Organizing Resources as Packages
+
+Multiple related actions can be organized together into packages. Packages allow for common sets of resources, such as parameters, to be applied to multiple actions. A package can be used to centralize many of the components that will be used throughout the rest of the lab.
+
+* Create a package called iot-serverless:
+
+[source,bash]
+----
+$ wsk -i package create --shared yes iot-serverless
+----
+NOTE: The shared flag allows the package to be visible globally
+
+* Use the package list command to view the newly created package as well as the other packages included by default with the platform
+
+[source,bash]
+----
+$ wsk -i package list
+----
+
+=== Adding an Action to the Package
+
+Previously, we created a few actions. One of which was called formatInput. By default, actions are created in the default whisk.system package. The action was fairly simple and replaced the values of the topic parameter containing periods to slashes.
+
+* Since a new package iot-serverless was created, delete the existing formatInput action so that we can organize resource more effectively
+
+[source,bash]
+----
+$ wsk -i action delete formatInput
+----
+Aside from the topic name, another key component of input that we are concerned about is the the current location of an asset. The IoT data in this lab provides the latitude and longitude as a single value called data separated by a space. To format both, the topic name as demonstrated earlier, and latitude and longitude values, a JavaScript function is available in a file called iot-serverless-openwhisk-functions/format/formatInput.js
+
+* Create an improved formatInput action using the aforementioned JavaScript file using the following command:
+
+[source,bash]
+----
+$ wsk -i action update iot-serverless/formatInput iot-serverless-openwhisk-functions/format/formatInput.js
+----
+
+* Now, display the contents of the package which will show the action which was just created
+
+[source,bash]
+----
+$ wsk -i package get iot-serverless --summary
+----
+
+== Introduction to Triggers
+
+Thus far, we have explicitly invoked actions containing our business logic. In a microservices world, architectures have adopted the use of eventing or reactive patterns to invoke business logic instead of proactive based approaches.
+
+In OpenWhisk, to support this architectural approach, Triggers represent a class of events emitted by event source e.g. location coordinates from factory assets. Triggers can be fired manually or in response to certain events.
+
+* To demonstrate how triggers can be utilized, let’s go ahead and create a trigger called iotServerlessTrigger
+
+[source,bash]
+----
+$ wsk -i trigger create iotServerlessTrigger
+----
+
+* Confirm the trigger has been created by listing the defined triggers
+
+[source,bash]
+----
+$ wsk -i trigger list
+----
+
+== Connecting Triggers to Actions Using Rules
+
+While triggers maintain sourcing events within OpenWhisk, they have no effective use until they are connected with an action. This is where Rules comes into play. Rules associate a single trigger with a single action. When a trigger is fired, a rule will pass the invocation to the action.
+
+* To demonstrate how Rules are utilized in OpenWhisk, create a new rule that associates the iotServerlessTrigger trigger to the formatInput action within the iot-serverless package called iotServerlessRule:
+
+[source,bash]
+----
+$ wsk -i rule update iotServerlessRule iotServerlessTrigger iot-serverless/formatInput
+----
+Now that the trigger has been connected to action by way of the rule, we can demonstrate how OpenWhisk utilizes this pattern by “firing” the trigger. Recall, the formatInput action requires two parameters be specified: topic and data.
+
+* Invoke the trigger as shown below:
+
+[source,bash]
+----
+$ wsk -i trigger fire iotServerlessTrigger --param topic /sf/boiler/controller --param data "37.784237 -122.401410"
+----
+
+=== Activations
+
+When the trigger was invoked the returned response was similar to the following:
+
+[source,bash]
+----
+ok: triggered /_/iotServerlessTrigger with id 94767a28d47c42dbb67a28d47c22db63
+----
+
+The id refers to an Activation which confirms the request was accepted by OpenWhisk. When we invoked the action previously, we also passed in the --result flag which tells OpenWhisk to monitor the action and wait for a response to be produced. Since triggers do not produce a result as it is the Rule that performs the work of invoking the action, so we will have to investigate the activation chain to discover the result of the action.
+
+* The details of the activation can be found by using the following command replacing the id from the prior command:
+
+[source,bash]
+----
+$ wsk -i activation get <ID>
+----
+Inside the activation response, you will notice in the logs property a JSON payload that illustrates the response that was returned from the invocation of the action. Inside this payload includes the activationId that can be used to obtain the result from the formatInput action.
+* Once again, query the activation, but this time using the activationId that is present in the logs field from the prior invocation:
+
+[source,bash]
+----
+$ wsk -i activation get <ID>
+----
+
+* Inside the response field will be the result of the formatInput action similar to the following
+
+[source, Ruby]
+----
+    "response": {
+        "status": "success",
+        "statusCode": 0,
+        "success": true,
+        "result": {
+            "data": "37.784237 -122.401410",
+            "latitude": "37.784237",
+            "longitude": "-122.401410",
+            "topic": "/sf/boiler/controller"
+        }
+    },
+----
+
+As displayed, the parameters that were provided to the trigger were sent to the formatInput action by way of the rule that we defined and the latitude and longitude fields were split out as expected based on the values provided in the data field.
+
+=== Developing a Node.js Action to Enrich Input
+
+In a prior lab, we introduced how to create simple OpenWhisk actions using JavaScript. While standalone JavaScript actions are very lightweight, they do have limitations in the functionality that they are able to provide, especially when additional libraries or dependencies are required. A popular pattern for transmitting data is to pass along a key and perform a lookup in a database to enrich content. In this section, you will configure a Node.js based action to lookup content in the the MongoDB database that was previously seeded with values based on an input parameter. The values contained within the document will be appended to the input parameters and returned as output.
+
+* First, from the root of the project folder, navigate to the folder containing the source for the Node.js based function:
+
+[source,bash]
+----
+$ cd iot-serverless-openwhisk-functions/enricher
+----
+
+Within this folder, you will notice three files:
+
+package.json - npm manifest file
+enricher.js - OpenWhisk function
+example.env - Sample file that will be used as a base for providing environment variables for the function
+
+Take a moment to explore each of these files and their contents
+One of the principles of reusable software is to externalize configurations outside of the source code. To connect to MongoDB from the function, the properties related to the location of the database and credentials must be provided. Node.js offers the functionality to externalize these values in a file called .env alongside the application. At runtime, the values provided will be available as environment variables for the application to leverage. An file called example.env has been provided with the keys that require configuration.
+
+* Edit the file to contain the following values based on the configuration of MongoDB
+
+[source,bash]
+----
+MONGODB_HOST=mongodb.iot-serverless.svc
+MONGODB_USER=iot-serverless
+MONGODB_PASSWORD=iot-serverless
+MONGODB_DATABASE=iotserverless
+----
+
+* Rename the file to .env so that the values will be available to the function
+
+[source,bash]
+----
+$ mv example.env .env
+----
+* Install all of the dependencies that are defined in the package.json file
+
+[source,bash]
+----
+$ npm install
+----
+
+* Now, package up the Node.js application
+
+[source,bash]
+----
+$ npm run package
+----
+A new file called enricher.zip will be created in the dist folder. This will be uploaded to OpenWhisk as the content used by the function.
+
+* Create a new function called enricher by executing the following command
+
+[source,bash]
+----
+$ npm run deploy
+----
+Internally, npm runs the command wsk -i action update iot-serverless/enricher dist/enricher.zip --kind nodejs:8. The npm run deploy is a convenience method to simplifying the creation of the function.
+
+With the function deployed, let’s test it out.
+
+The MongoDB has a collection called assets which was populated with data earlier. Inside this collection, a column called topic specifies the name of the topic associated with the particular asset (more on that later). The enricher function will accept a parameter called topic and perform a lookup on the collection for any document matching the value and return the contents of the document.
+
+* Once again, view the contents of the assets table by executing the following command:
+
+[source,bash]
+----
+$ oc rsh $(oc get pods -l=deploymentconfig=mongodb -o 'jsonpath={.items[0].metadata.name}') bash -c "mongo 127.0.0.1:27017/\${MONGODB_DATABASE} -u \${MONGODB_USER} -p \${MONGODB_PASSWORD} --eval='db.assets.find()'"
+----
+* Select one of the topic values returned and invoke the enricher function (for example, ‘/sf/boiler/pump-lx222’ topic name)
+
+[source,bash]
+----
+$ wsk -i action invoke iot-serverless/enricher --param topic “/sf/boiler/pump-lx222” --result
+----
+Notice how the content of the document has been returned. Feel free to use another topic name from the database results as well as a value that is not present in the database. Only the input value will be returned.
+Creating a Sequence of Actions
+
+Thus far, we have created two functions, one that will perform input formatting, and another that will execute a lookup from the database based on provided values. Whether you have noticed or not, several of the parameter names have been identical (such as topic). This is no coincidence. OpenWhisk provides the capability chaining multiple actions together where the output from one action is the input for another action. This functionality is known as a Sequence. Sequences are entirely separate actions and define the order in which actions are executed.
+
+* Create a new sequence action called IotServerlessSequence in the iot-serverless package that will first call formatInput action and then use the output as the input parameters for the enricher action.
+
+[source,bash]
+----
+$ wsk -i action update iot-serverless/iotServerlessSequence --sequence iot-serverless/formatInput,iot-serverless/enricher
+----
+
+* With a new method for initiating the action to format the input, update the iotServerlessRule to invoke the iotServerlessSequence sequence action instead of directly calling the formatInput action:
+
+[source,bash]
+----
+$ wsk -i rule update iotServerlessRule iotServerlessTrigger iot-serverless/iotServerlessSequence
+----
+
+* Fire the trigger using the same parameters as before
+
+[source,bash]
+----
+$ wsk -i trigger fire iotServerlessTrigger --param topic /sf/boiler/controller --param data "37.784237 -122.401410"
+----
+
+* Once again the id of the activation of the trigger will be returned. Using the steps from the Activations section, locate the activationId within the trigger activation to determine the output from the execution of the sequence action. A value similar to the following indicates the sequence action processed successfully.
+
+[source, Ruby]
+----
+    "response": {
+        "status": "success",
+        "statusCode": 0,
+        "success": true,
+        "result": {
+            "center_latitude": "37.784237",
+            "center_longitude": "-122.401410",
+            "data": "37.784237 -122.401410",
+            "geofence_radius": "1.0",
+            "latitude": "37.784237",
+            "location": "Boiler room",
+            "longitude": "-122.401410",
+            "name": "Surface blow down controller",
+            "picture": "Blowdown-Controller.jpg",
+            "topic": "/sf/boiler/controller"
+        }
+    },
+    "logs": [
+        "05233e250a0d4276a33e250a0db27622",
+        "85f6c5a268cf45dcb6c5a268cf35dc2c"
+    ],
+----
+
+Notice how latitude and longitude have been split out into separate fields as per the logic of the formatInput action along with values returned from MongoDB as provided by theIenricher action.
+In addition, there is a field called logs containing two values. Those are the activation ID’s from the execution of each function in the sequence action. Feel free to view the execution of those actions as well.
+
+== Using Geofence for asset tracking
+
+Geofence is a virtual perimeter for a geographic area.  A geofence can be set dynamically e.g. circle  around a center point or defined as a boundary around an area. Geofencing can be used for several IoT use cases including asset tracking, security & surveillance, retail etc. In the use case for this lab, factory equipments are geofenced by their assigned location
+Haversine formula
+
+To determine whether something is within its geofence, haversine formula is used. The haversine formula determines the great-circle distance between two points on a sphere given their longitudes and latitudes.
+
+For any two points on a sphere, the haversine of the central angle between them is given by:
+
+Haversine
+formula:
+a = sin²(Δφ/2) + cos φ1 ⋅ cos φ2 ⋅ sin²(Δλ/2)
+c = 2 ⋅ atan2( √a, √(1−a) )
+d = R ⋅ c
+where
+φ is latitude, λ is longitude, R is earth’s radius (6,371km)
+All angles need to be in radians to pass to trig functions
+
+Source: https://www.movable-type.co.uk/scripts/latlong.html
+
+The value needs to be converted from degrees to radians using the formula:
+Radians = degrees * (pi/180)
+
+The JavaScript function implementing haversine formula is already provided for this lab. This function called geofence.js is located at iot-serverless-openwhisk-functions/geofence/. Take a moment and familiarize yourself with the source code. It is important that no modifications to the file be made as it may impact the expected outcome of the lab.
+
+==== Create geofence Action
+
+* Using the provided function, use the wsk tool to create an action called geofence:
+
+[source,bash]
+----
+$ wsk -i action update iot-serverless/geofence iot-serverless-openwhisk-functions/geofence/geofence.js
+----
+
+* Confirm the action has been created by describing the contents of the iot-serverless package.
+
+[source,bash]
+----
+$ wsk -i package get iot-serverless --summary
+----
+There should now be three functions within this package: formatInput, enricher, and geofence
+Finally, since a new action was created, we will need to update the existing sequence action so that the geofence action is executed after the data enrichment action.
+
+* Update the sequence action by executing the following command:
+
+[source,bash]
+----
+$ wsk -i action update iot-serverless/iotServerlessSequence --sequence iot-serverless/formatInput,iot-serverless/enricher,iot-serverless/geofence
+----
+===== Putting Sequence to use
+
+Lets see how to use this in a real life scenario of a factory that wants to monitor an asset called DIN Rail power supply. This asset is expected to be located at (37.784393, -122.401399) and can move only within an assigned area (3m) i.e spare inventory section in the warehouse. If this asset moves outside this assigned area (geofence) then an alert will be triggered. Let’s say the asset now reports its current location as (37.784420, -122.401399) which is outside its geofence then the action sequence should set a value of “alert: 1“ in the payload.
+
+* Test this scenario with the sequence we created above:
+
+[source,bash]
+----
+$ wsk -i action invoke iot-serverless/iotServerlessSequence --param topic /sf/warehouse/power-supply --param data "37.784420 -122.401399"
+----
+Should result in:
+on processed successfully.
+
+[source, Ruby]
+----
+    "response": {
+        "status": "success",
+        "statusCode": 0,
+        "success": true,
+        “alert”: 1,
+        "result": {
+            "center_latitude": "37.784393",
+            "center_longitude": "-122.401399",
+            "data": "37.784393 -122.401399",
+            "geofence_radius": "3.0",
+            "latitude": "37.784420",
+            "location": "Warehouse",
+            "longitude": "-122.401399",
+            "name": "DIN Rail power supply 240-24",
+            "picture": "DIN-Rail.jpg",
+            "topic": "/sf/warehouse/power-supply"
+        }
+    },
+    "logs": [
+        "05233e250a0d4276a33e250a0db27622",
+        "85f6c5a268cf45dcb6c5a268cf35dc2c",
+        "96233e250a0d4276a33e250a0db28512"
+    ],
+----
+
+
+=== Inserting Records into the database
+
+The final step in the data flow after all of the prior actions have executed is that the records need to be persisted so that it may be retrieved at a later point in time. Records will be inserted into the MongoDB database through the use of an action called dbInsert. Since the connectivity requires database drivers and additional dependencies, a Node.js based function will be used once again.
+
+* First, from the root of the project folder, navigate to the folder containing the source for the dbInsert action:
+
+[source,bash]
+----
+$ cd iot-serverless-openwhisk-functions/dbinsert
+----
+* Install all of the dependencies that are defined in the package.json file.
+
+[source,bash]
+----
+$ npm install
+----
+* To connect to MongoDB from the function, the properties related to the location of the database and credentials must be provided. Since connectivity will be made from the action to the same mongodb instance as the enricher function created earlier, the .env external environmental variable file used for that function can be reused and copied into the current directory:
+
+[source,bash]
+----
+$ cp ../enricher/.env .
+----
+* Now, package up the Node.js application:
+
+[source,bash]
+----
+$ npm run package
+----
+* Create a new action called iot-serverless/dbInsert by executing the following command:
+
+[source,bash]
+----
+$ npm run deploy
+----
+* Confirm the the action called iot-serverless/dbInsert has been created within the iot-serverless package:
+
+[source,bash]
+----
+$ wsk -i package get iot-serverless --summary
+----
+There should now be 5 actions displayed (4 normal actions and 1 sequence action)
+
+* Update the sequence action to include all of the previously created actions:
+
+[source,bash]
+----
+$ wsk -i action update iot-serverless/iotServerlessSequence --sequence iot-serverless/formatInput,iot-serverless/enricher,iot-serverless/geofence,iot-serverless/dbInsert
+----
+
+=== Validate Entire Sequence of Action
+
+Now that we have created the entire series of OpenWhisk actions tied together by a sequence action to process the data which will be transmitted from IoT data, lets validate the entire flow which will result in a document entered into the MongoDb database.
+
+* Yet again, fire the iotServerlessTrigger trigger using the same set of arguments that have been utilized previously:
+
+[source,bash]
+----
+$ wsk -i trigger fire iotServerlessTrigger --param topic /sf/boiler/controller --param data "37.784237 -122.401410"
+----
+Determine the results of the activations from both the trigger and rule. A result similar to the following indicates the record was successfully saved to MongoDB.
+* Obtain a shell session in the MongoDB pod by executing the following command:
+
+[source,bash]
+----
+$ oc rsh $(oc get pods -l=deploymentconfig=mongodb -o 'jsonpath={.items[0].metadata.name}') bash -c "mongo 127.0.0.1:27017/\${MONGODB_DATABASE} -u \${MONGODB_USER} -p \${MONGODB_PASSWORD}"
+----
+* The dbInsert action persists data into a collection called results. Query the values of the collection by executing the following command:
+
+[source,bash]
+----
+> db.results.find()
+----
+
+A single value should be returned similar to the following:
+
+[source,bash]
+----
+{ "_id" : ObjectId("5aed26bbd9ca04f727a34329"), "name" : "Surface blow down controller", "location" : "Boiler room", "latitude" : "37.784237", "alert" : 0, "data" : "37.784237 -122.401410", "geofence_radius" : "1.0", "longitude" : "-122.401410", "picture" : "Blowdown-Controller.jpg", "topic" : "/sf/boiler/controller", "center_longitude" : "-122.401410", "center_latitude" : "37.784237", "date" : ISODate("2018-05-05T03:36:27.628Z") }
+----
+* Finally, remove the test data by dropping the contents of the results collection and exit out of the MongoDB shell and pod
+
+[source,bash]
+----
+> db.results.drop()
+----
+At this point the OpenWhisk actions have been successfully been validated
+
+== Deploying IoT Components
+
+=== IoT Data Transports
+
+Due to its unique requirements (less compute capable devices, low power use, small message payload and large number of devices), IoT requires different data transport protocols than other use cases e.g. mobile, client/server or embedded. Some of the commonly used data transport protocols for IoT include MQTT, CoAP, LWM2M and AMQP. For this lab, MQTT is being used as the data transport for assets sending location data to message broker.
+
+==== Deploying AMQ
+
+Red Hat JBoss AMQ provides fast, lightweight, and secure messaging  and supports AMQP, MQTT, STOMP, and WebSocket protocols. For this lab, a containerized xPaaS image of AMQ, designed for use with OpenShift, is being used. A series of templates are also available to streamline the deployment of AMQ onto OpenShift.
+
+* Deploy the AMQ image to OpenShift by by executing the following command which will instantiate the template provided by the platform:
+
+[source,bash]
+----
+$ oc process -p MQ_USERNAME=iot-serverless -p MQ_PASSWORD=iot-serverless -p MQ_PROTOCOL=openwire,mqtt -p AMQ_MESH_DISCOVERY_TYPE=dns openshift//amq63-persistent | oc apply -f-
+----
+The AMQ broker will be created to support accepting MQTT messages from the IoT device along with the default Openwire protocol.
+
+* A DeploymentConfig called broker-amq was created to manage the deployment of the Broker. To illustrate the configuration of the AMQ broker, describe the contents of the broker-amq DeploymentConfig:
+
+[source,bash]
+----
+$ oc describe dc broker-amq
+----
+NOTE: Key items to note within the podTemplate is a container called broker-amq and the exposure of port 1883, which is the default port for the MQTT protocol along with an environment variable called AMQ_TRANSPORTS which enables both the OpenWire and MQTT protocols on the broker.
+
+* Confirm the broker is running by verifying the pod is up and running using the following command:
+
+[source,bash]
+----
+$ oc get pods -l application=broker
+----
+A READY column indicating 1/1 denotes the service is ready and available
+
+== Connecting into OpenWhisk
+
+Now that the AMQ broker is up and running within OpenShift and able to accept traffic sent by IoT assets using the MQTT protocol, how these messages are consumed by OpenWhisk so that they can be used by the actions previously becomes the next area of concern.
+
+So far, our primary entrypoint for firing actions has been through a Trigger. However, since the MQTT transport is an eventing based protocol where messages are streamed, the use of triggers can be a limiting factor. OpenWhisk provides an alternative option that builds on top of the concept of triggers and supports streaming events onto the platform called Feeds.
+
+=== Feeds
+
+Feeds are an advanced concept in OpenWhisk where users can expose an event producer service within a package. A feed is controlled by a Feed Action which handles deleting, pausing and resuming the streaming of events. Feeds can be implemented in one of three architectural patterns:
+
+** Hooks
+** Polling
+** Persistent Connections
+
+In our use case for accepting messages from the AMQ broker, the Persistent Connection feed option is the most applicable.
+
+A full overview of feeds and the architecture can be found in the OpenWhisk project documentation.
+=== Feed Action
+
+To manage the registration of MQTT topics for which messages should be sent into the OpenWhisk platform, a feed action has been provided at in the repository at iot-serverless-mqtt-feed/action/feedAction.js
+
+Feel free to browse the content of the action.
+
+ * Add the feed action to the iot-serverless package using the following command executed from the root of the repository:
+
+ [source,bash]
+ ----
+ $ wsk -i action update -a feed true iot-serverless/mqttFeed iot-serverless-mqtt-feed/action/feedAction.js
+----
+TIP: The -a flag is designates that an annotation should be placed on the associated action.
+
+An annotation is a piece of metadata that can be applied to an action to provide additional information without disrupting the underlying schema. When creating a feed action, an annotation called feed with a value of true is specified so that the platform will recognize and manage the asset appropriately.
+
+* Display the contents of the iot-serverless package to confirm the feed has been registered
+
+[source,bash]
+----
+ $ wsk -i package get iot-serverless --summary
+----
+=== Feed Provider
+
+Recall the three types of feeds that can be implemented: hooks, polling and connections. We stated that we would be utilizing the connection type of feed as it will provide a persistent connection to the AMQ broker. Since actions are short lived, another component must be added to the environment to maintain the long lived connection to AMQ. This service is known as a Feed Provider.
+
+To conform with the feed architecture within OpenWhisk, the provider will need to expose a REST API that manages the control of the feed as well  as act as a proxy between AMQ and OpenWhisk.
+
+A Feed Provider implementation has been provided in the iot-serverless-mqtt-feed/provider/ folder and is a Spring Boot based application.
+
+Templates have been created to support the building of a custom image containing the application along with the deployment to OpenShift.
+
+* First, instantiate the template to build the image:
+
+[source,bash]
+----
+ $ oc process -f applier/templates/mqtt-provider-build.yml | oc apply -f-
+----
+A new BuildConfig and ImageStream will be created along with the triggering of the Source-to-Image based build in OpenShift.
+
+* A new build should be automatically triggered. Verify the build has started by running the following command:
+
+[source,bash]
+----
+ $  oc get builds -l application=mqtt-provider
+----
+* When a build is present and running, the logs from the build execution can be seen using the following command:
+
+[source,bash]
+----
+ $ oc logs -f builds/<build_name>
+----
+
+When the image has been built successfully, another template can be instantiated to create the associated DeploymentConfig and Service. A set of parameters must be provided when processing the template including the credentials for access the MQTT broker and the location of the broker within the iot-serverless project.
+
+* Execute the following command to instantiate the software sensor deployment template.
+
+[source,bash]
+----
+ $ oc -p MQ_USERNAME=iot-serverless -p MQ_PASSWORD=iot-serverless -p MQ_APPLICATION_SERVICE=broker-amq-tcp process -p MONGODB_SERVICE=mongodb -f applier/templates/mqtt-provider-deployment.yml | oc apply -f-
+----
+Verify the mqtt-provider is active by executing the command oc get pods. If the pod with the prefix mqtt-provider displays 1/1 in the READY column, the pod is successfully running.
+
+Finally, with the Feed action and provider deployed, the final step is to update the existing iotServerlessTrigger to make use of the feed action. The feed action takes in one parameter called “topic” which is the selector pattern that the provider should consider when registering itself with the broker. Triggers utilizing feeds also need to have the --feed flag also specified. Unfortunately, this flag is only available when creating new triggers:
+
+ * Delete the existing iotServerlessTrigger trigger:
+
+[source,bash]
+----
+ $ wsk -i trigger delete iotServerlessTrigger
+----
+
+* Now recreate the trigger to also denote the feed that should be used as the event source and the parameter with the topic pattern:
+
+[source,bash]
+----
+ $ wsk -i trigger create iotServerlessTrigger --feed iot-serverless/mqttFeed -p topic “.sf.>”
+----
+If no error was returned, the trigger was successfully registered with the provider. This can be confirmed by viewing the logs for the mqtt-trigger which will display the following:
+
+source,bash]
+----
+ 2018-05-05 18:22:29.057  INFO 1 --- [nio-8080-exec-7] c.r.i.controller.FeedProviderController  : Trigger Name: /_/iotServerlessTrigger
+ 2018-05-05 18:22:29.242  INFO 1 --- [nio-8080-exec-7] c.redhat.iot.service.TriggerDataService  : Saving Trigger
+----
+
+== Software Sensor Application
+
+With the connectivity and integration between the AMQ broker and OpenWhisk now complete, the next step is to integrate IoT data using a simulated software sensor.
+
+=== Software Sensor
+
+Software sensor is a Spring Boot based application that simulates GPS sensor data for the assets in the factory. It periodically sends location coordinates for each asset similar to how a real GPS sensor works.
+
+Software sensor application is driven by a configuration file called application.yml (located at:  iot-serverless-software-sensor/src/main/resources). The configuration file provides current  location parameters for each asset.
+
+==== Deploy the Software Sensor
+
+Templates have been created to support the building of a custom image containing the application along with the deployment to OpenShift.
+
+* First, instantiate the template to build the image:
+
+source,bash]
+----
+ $ oc process -f applier/templates/software-sensor-build.yml | oc apply -f-
+----
+A new BuildConfig and ImageStream will be created along with the triggering of the Source-to-Image based build in OpenShift.
+
+* A new build should be automatically triggered. Verify the build has started by running the following command:
+
+source,bash]
+----
+ $ oc get builds
+----
+* When a build is present and running, the logs from the build execution can be seen using the following command:
+
+source,bash]
+----
+ $ oc logs -f builds/<build_name>
+----
+
+When the image has been built successfully, another template can be instantiated to create the associated DeploymentConfig and Service. A set of parameters must be provided when processing the template including the credentials for access the MQTT broker and the location of the broker within the iot-serverless project.
+
+* Execute the following command to instantiate the software sensor deployment template.
+
+source,bash]
+----
+ $ oc -p MQTT_USERNAME=iot-serverless -p MQTT_PASSWORD=iot-serverless -p MQTT_APPLICATION_SERVICE=broker-amq-mqtt -p MQTT_TOPIC=proxsensor01 process -f applier/templates/software-sensor-deployment.yml | oc apply -f-
+----
+==== Scale up software sensor
+
+* By default, the software sensor is configured with a replica count of 0 Execute the following command to enable software sensor by changing to one replica:
+
+source,bash]
+----
+ $ oc scale dc/software-sensor --replicas=1
+----
+Verify the software sensor is active by executing the command oc get pods. If the pod with the prefix software-sensor displays 1/1 in the READY column, the pod is successfully running.
+
+This application makes use of OpenShift Health Check to verify the connectivity of the MongoDB database. Before marking the pod active and healthy, HTTP requests are made on an endpoint exposed on the application supported by Spring Boot Endpoints. The source code for this health check can be found at iot-serverless-software-sensor/src/main/java/com/redhat/iot/MqttHealthIndicator.java
+
+* With the application running, access the software-sensor logs to confirm that it is transmitting data:
+
+source,bash]
+----
+ $ oc logs $(oc get pods -l=application=software-sensor -o 'jsonpath={.items[0].metadata.name}')
+----
+
+If no errors are observed and messages similar to the following are displayed, the deployment was successful.
+
+source,bash]
+----
+ $ 2018-05-04 05:26:27.352  INFO 1 --- [    scheduler-3] com.redhat.iot.AssetRunner               : Running Scheduled Task for Asset: Chemical Pump LX-222 - Iteration: 2 - Latitude: 37.784218 - Longitude: -122.401858
+ 2018-05-04 05:26:27.353  INFO 1 --- [    scheduler-4] com.redhat.iot.AssetRunner               : Running Scheduled Task for Asset: Condensate duplex pump - Iteration: 2 - Latitude: 37.784269 - Longitude: -122.401312
+ 2018-05-04 05:26:27.362  INFO 1 --- [    scheduler-5] com.redhat.iot.AssetRunner               : Running Scheduled Task for Asset: Lighting control unit RT-SD-1000 - Iteration: 2 - Latitude: 37.7843430 - Longitude: -122.401159
+ 2018-05-04 05:26:32.352  INFO 1 --- [    scheduler-9] com.redhat.iot.AssetRunner               : Running Scheduled Task for Asset: Chemical Pump LX-222 - Iteration: 3 - Latitude: 37.784234 - Longitude: -122.401858
+ 2018-05-04 05:26:32.353  INFO 1 --- [    scheduler-1] com.redhat.iot.AssetRunner               : Running Scheduled Task for Asset: Condensate duplex pump - Iteration: 3 - Latitude: 37.784269 - Longitude: -122.401322
+ 2018-05-04 05:26:32.364  INFO 1 --- [   scheduler-10] com.redhat.iot.AssetRunner               : Running Scheduled Task for Asset: Lighting control unit RT-SD-1000 - Iteration: 3 - Latitude: 37.7843510 - Longitude: -122.401159
+ 2018-05-04 05:26:34.351  INFO 1 --- [    scheduler-7] com.redhat.iot.AssetRunner               : Running Scheduled Task for Asset: Robotic arm joint RT-011 - Iteration: 1 - Latitude: 37.784115 - Longitude: -122.40138
+ 2018-05-04 05:26:35.351  INFO 1 --- [   scheduler-11] com.redhat.iot.AssetRunner               : Running Scheduled Task for Asset: Teledyne DALSA Camera - Iteration: 1 - Latitude: 37.784312 - Longitude: -122.401241
+ 2018-05-04 05:26:37.352  INFO 1 --- [    scheduler-8] com.redhat.iot.AssetRunner               : Running Scheduled Task for Asset: Chemical Pump LX-222 - Iteration: 4 - Latitude: 37.784250 - Longitude: -122.401858
+----
+
+== Visualizing Data
+
+=== Tracing entire data flow
+
+This lab will go over results of functions created in the previous labs, validating messages from devices to broker and viewing location of various assets on a map.
+
+=== View messages in AMQ Console
+
+* Click on the AMQ pod to access the deployment:
+
+image::image1.png[AMQ Pod]
+
+* Click on Open Java Console to access AMQ console:
+
+image::image??.png[Getting to AMQ Console]
+
+* Click on Topic to see the expanded view:
+
+image::image??.png[AMQ Topic]
+
+* Click on any topic name (unique for each asset) to see number of dequeued messages:
+
+image::image??.png[Message Queue]
+
+== View data in UI Application
+
+To visualize the data that has been sent by the software simulator and processed through the set of OpenWhisk functions, a Patternfly based UI app will be deployed that will show the results on a geographical map. The app will show the geofence of each asset and description of the selected asset. If an asset crosses its geofence, then an alert will be shown on the map. The google map API is being used to display the location of assets and geofence on the map. Source for the UI application is located  (iot-serverless-ui/src/main/resources/static).
+
+=== Deploy the UI Application
+
+Templates have been created to support the building of a custom image containing the application along with the deployment to OpenShift.
+
+* First, instantiate the template to build the image:
+
+source,bash]
+----
+$ oc process -f applier/templates/ui-build.yml | oc apply -f-
+----
+A new BuildConfig and ImageStream will be created along with the triggering of the Source-to-Image based build in OpenShift.
+
+* A new build should be automatically triggered. Verify the build has started by running the following command:
+
+source,bash]
+----
+$ oc get builds -l application=ui
+----
+
+* When a build is present and running, the logs from the build execution can be seen using the following command:
+
+source,bash]
+----
+$ oc logs -f builds/<build_name>
+----
+
+When the image has been built successfully, another template can be instantiated to create the associated DeploymentConfig, Service and the Route exposing the application outside the cluster. A single parameter must be provided with the name of the MongoDB service which is used to connect to the backend persistent store within the iot-serverless project.
+
+* Execute the following command to instantiate the software sensor deployment template.
+
+source,bash]
+----
+$ oc -p MONGODB_SERVICE=mongodb process -f applier/templates/ui-deployment.yml | oc apply -f-
+----
+
+* To access the newly deployed application, execute the following command to get the url of the from the route:
+
+source,bash]
+----
+$ oc get routes
+----
+
+* In the browser, navigate to the url listed in the HOST column.
+
+Alternatively, OpenShift web console can be used to access the UI application.
+
+* Click on the UI pod to view the expanded view:
+
+image::image11.png[UI App Expand]
+
+* Click on the listed route:
+
+image::image10.png[UI App URL]
+
+UI app is will display the real time location of assets on the map:
+
+image::image4.png[UI App]
+
+* Select an asset by clicking on its marker. Selected asset will display a larger marker (1) and its geofence (2):
+
+image::image12.png[Asset Fence In]
+
+If an asset has crossed it geofence (1), a warning marker (2) will be displayed:
+
+image::image9.png[Asset Fence Out]
+
+More information about the selected asset is also displayed at the bottom:
+
+image::image8.png[Asset Info]
+
+== Advanced Labs (Optional)
+
+=== Setting Default Parameters
+
+One of the benefits of packages is the ability to define default parameters that can be automatically applied to actions. In the iot-serverless package that was created in the prior section, the formatInput action takes in two parameters, the name of the topic for which messages will be received from (topic) and a single string consisting of the latitude and longitude. When invoking the action, we could specify the parameters explicitly as done previously, or define them globally within the package.
+
+== Conclusion & Next Steps
+
+This lab provides hands-on experience with Serverless Architecture, FaaS, Apache OpenWhisk, OpenShift and how IoT use case like Smart Asset Management can use these technologies.
+Working through the various exercises in this lab, you learned about how to:
+
+* Deploy Apache OpenWhisk and learning how to interact with it using CLI
+* Deploy MongoDB and seeding it with documents
+* Creating OpenWhisk Actions in JavaScript and Node.js
+* Creating Trigger, Package and Rules
+* Chaining Actions into a Sequence
+* Working with Geofence
+* Deploying IoT Components
+* Working with Feeds and Providers
+* Deploying Software Sensor Application
+* Visualizing data through UI
+
+=== Next Steps
+
+All the components that were built this lab can be automated using Ansible playbooks. The repo (https://github.com/sabre1041/iot-serverless) provides instructions on how to deploy this lab with a few easy steps.
