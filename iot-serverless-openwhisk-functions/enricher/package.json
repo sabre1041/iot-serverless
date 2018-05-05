@@ -5,8 +5,8 @@
   "main": "enrich.js",
   "scripts": {
     "package": "mkdir -p dist && zip -r dist/enricher.zip . --exclude 'dist/*'",
-    "deploy": "wsk -i action update enricher dist/enricher.zip --kind nodejs:8",
-    "dev": "wsk -i action invoke enricher --result"
+    "deploy": "wsk -i action update iot-serverless/enricher dist/enricher.zip --kind nodejs:8",
+    "dev": "wsk -i action invoke iot-serverless/enricher --result"
   },
   "repository": {
     "type": "git",

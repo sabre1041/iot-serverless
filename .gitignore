@@ -7,3 +7,4 @@ galaxy
 node_modules
 dist
 .env
+workspace

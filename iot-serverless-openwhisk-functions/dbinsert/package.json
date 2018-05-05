@@ -5,8 +5,8 @@
   "main": "dbinsert.js",
   "scripts": {
     "package": "mkdir -p dist && zip -r dist/dbinsert.zip . --exclude 'dist/*'",
-    "deploy": "wsk -i action update dbinsert dist/dbinsert.zip --kind nodejs:8",
-    "dev": "wsk -i action invoke dbpinsert --result"
+    "deploy": "wsk -i action update iot-serverless/dbInsert dist/dbinsert.zip --kind nodejs:8",
+    "dev": "wsk -i action invoke iot-serverless/dbInsert --result"
   },
   "repository": {
     "type": "git",
