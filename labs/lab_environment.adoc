@@ -71,7 +71,7 @@ Welcome! See 'oc help' to get started.
 
 The OpenShift CLI has been successfully configured and ready for use in the lab!
 
-==== *OpenShift Web Console*
+=== OpenShift Web Console
 
 OpenShift features a rich user interface for managing resources on the platform.
 
