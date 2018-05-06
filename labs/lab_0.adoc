@@ -1,4 +1,8 @@
-= Lab Environment
+:imagesdir: images
+:icons: font
+:source-highlighter: prettify
+
+= Lab 0: Lab Environment & Resources
 
 IMPORTANT: TODO: Need to provide introductory information about lab environment
 
@@ -89,3 +93,36 @@ Password: *r3dh4t1!*
 The OpenShift catalog should be shown upon successful authentication
 
 image::ocp-catalog.png[Request GUID]
+
+== Lab Resources
+
+The primary source of content for this lab is the IoT Serverless project repository.
+
+*Project location:* link:https://github.com/sabre1041/iot-serverless[https://github.com/sabre1041/iot-serverless]
+
+Navigate to the `/home/lab-user` folder and clone the lab repository. Once cloned navigate into the `iot-serverless` directory:
+
+[source,bash]
+----
+$ cd /home/lab-user
+$ git clone https://github.com/sabre1041/iot-serverless
+Cloning into 'iot-serverless'...
+remote: Counting objects: 597, done.
+remote: Compressing objects: 100% (86/86), done.
+remote: Total 597 (delta 32), reused 126 (delta 27), pack-reused 457
+Receiving objects: 100% (597/597), 8.95 MiB | 3.74 MiB/s, done.
+Resolving deltas: 100% (162/162), done.
+
+$ cd iot-serverless
+----
+
+The repository contains the following resources:
+
+* *Functions* (`iot-serverless-openwhisk-functions`): OpenWhisk actions to support values transmitted by IoT assets
+* *Applier* (`applier`): Declarative set of OpenShift resources. Components organized for automated application using the link:https://github.com/redhat-cop/openshift-applier[openshift-applier] framework.
+* *Software Sensor* (`iot-serverless-software-sensor`): Simulated software sensor representing IoT assets
+* *Feeds* (`iot-serverless-mqtt-feed`): OpenWhisk feed action and provider
+* *Data Visualization* (`iot-serverless-ui`): UI application to display values transmitted by IoT assets
+
+[.text-center]
+image:icons/icon-previous.png[align=left, width=128, link=iot_usecase.html] image:icons/icon-home.png[align="center",width=128, link=lab_content.html] image:icons/icon-next.png[align="right"width=128, link=lab_1.html]

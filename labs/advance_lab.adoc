@@ -1,0 +1,12 @@
+:imagesdir: images
+:icons: font
+:source-highlighter: prettify
+
+= Extra Labs (Optional)
+
+== Setting Default Parameters
+
+One of the benefits of packages is the ability to define default parameters that can be automatically applied to actions. In the iot-serverless package that was created in the prior section, the formatInput action takes in two parameters, the name of the topic for which messages will be received from (topic) and a single string consisting of the latitude and longitude. When invoking the action, we could specify the parameters explicitly as done previously, or define them globally within the package.
+
+[.text-center]
+image:icons/icon-previous.png[align=left, width=128, link=conclusion.html] image:icons/icon-home.png[align="center",width=128, link=lab_content.html]

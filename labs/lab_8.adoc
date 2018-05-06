@@ -1,0 +1,104 @@
+:imagesdir: images
+:icons: font
+:source-highlighter: prettify
+
+= Lab 8: Visualizing Data
+
+== Tracing entire data flow
+
+This lab will go over results of functions created in the previous labs, validating messages from devices to broker and viewing location of various assets on a map.
+
+=== View messages in AMQ Console
+
+* Click on the AMQ pod to access the deployment:
+
+image::image1.png[AMQ Pod]
+
+* Click on Open Java Console to access AMQ console:
+
+image::image??.png[Getting to AMQ Console]
+
+* Click on Topic to see the expanded view:
+
+image::image??.png[AMQ Topic]
+
+* Click on any topic name (unique for each asset) to see number of dequeued messages:
+
+image::image??.png[Message Queue]
+
+== View data in UI Application
+
+To visualize the data that has been sent by the software simulator and processed through the set of OpenWhisk functions, a Patternfly based UI app will be deployed that will show the results on a geographical map. The app will show the geofence of each asset and description of the selected asset. If an asset crosses its geofence, then an alert will be shown on the map. The google map API is being used to display the location of assets and geofence on the map. Source for the UI application is located  (iot-serverless-ui/src/main/resources/static).
+
+=== Deploy the UI Application
+
+Templates have been created to support the building of a custom image containing the application along with the deployment to OpenShift.
+
+* First, instantiate the template to build the image:
+
+source,bash]
+----
+$ oc process -f applier/templates/ui-build.yml | oc apply -f-
+----
+A new BuildConfig and ImageStream will be created along with the triggering of the Source-to-Image based build in OpenShift.
+
+* A new build should be automatically triggered. Verify the build has started by running the following command:
+
+source,bash]
+----
+$ oc get builds -l application=ui
+----
+
+* When a build is present and running, the logs from the build execution can be seen using the following command:
+
+source,bash]
+----
+$ oc logs -f builds/<build_name>
+----
+
+When the image has been built successfully, another template can be instantiated to create the associated DeploymentConfig, Service and the Route exposing the application outside the cluster. A single parameter must be provided with the name of the MongoDB service which is used to connect to the backend persistent store within the iot-serverless project.
+
+* Execute the following command to instantiate the software sensor deployment template.
+
+source,bash]
+----
+$ oc -p MONGODB_SERVICE=mongodb process -f applier/templates/ui-deployment.yml | oc apply -f-
+----
+
+* To access the newly deployed application, execute the following command to get the url of the from the route:
+
+source,bash]
+----
+$ oc get routes
+----
+
+* In the browser, navigate to the url listed in the HOST column.
+
+Alternatively, OpenShift web console can be used to access the UI application.
+
+* Click on the UI pod to view the expanded view:
+
+image::image11.png[UI App Expand]
+
+* Click on the listed route:
+
+image::image10.png[UI App URL]
+
+UI app is will display the real time location of assets on the map:
+
+image::image4.png[UI App]
+
+* Select an asset by clicking on its marker. Selected asset will display a larger marker (1) and its geofence (2):
+
+image::image12.png[Asset Fence In]
+
+If an asset has crossed it geofence (1), a warning marker (2) will be displayed:
+
+image::image9.png[Asset Fence Out]
+
+More information about the selected asset is also displayed at the bottom:
+
+image::image8.png[Asset Info]
+
+[.text-center]
+image:icons/icon-previous.png[align=left, width=128, link=lab_7.html] image:icons/icon-home.png[align="center",width=128, link=lab_content.html] image:icons/icon-next.png[align="right"width=128, link=conclusion.html]

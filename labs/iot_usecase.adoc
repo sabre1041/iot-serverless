@@ -1,6 +1,10 @@
-== Introduction to Use Case
+:imagesdir: images
+:icons: font
+:source-highlighter: prettify
 
-=== IoT Overview
+= Business Use Case: IoT
+
+== IoT Overview
 
 IDC defines Internet of Things (IoT) as a network of uniquely identifiable end points (or ‘things’) that communicate bi-directionally without human interaction using IP connectivity. For consumers, this could mean ability to control the thermostat, doors, irrigation system from across the world but for businesses, IoT can create new opportunities to connect with customers and partners and achieve operational efficiencies. IoT has potential to transform entire industries from transportation, retail, oil & gas, utilities to stadiums.
 
@@ -13,4 +17,7 @@ This lab demonstrates how Serverless can be used for IoT use cases that require 
 Equipment location is visualized on a geographical map using Google map API. Google Geolocation API is used to show each equipment’s geofence. Map data is dynamically updated with different markers used to indicate if an equipment is within its geofence or not.
 
 
-image::IoT-serverless-workflow-3.png[Lab Workflow]
+image::IoT-serverless-workflow-2.png[Lab Workflow]
+
+[.text-center]
+image:icons/icon-previous.png[align=left, width=128, link=tech_overview.html] image:icons/icon-home.png[align="center",width=128, link=lab_content.html] image:icons/icon-next.png[align="right"width=128, link=lab_0.html]
