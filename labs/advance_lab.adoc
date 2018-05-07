@@ -8,5 +8,13 @@
 
 One of the benefits of packages is the ability to define default parameters that can be automatically applied to actions. In the iot-serverless package that was created in the prior section, the formatInput action takes in two parameters, the name of the topic for which messages will be received from (topic) and a single string consisting of the latitude and longitude. When invoking the action, we could specify the parameters explicitly as done previously, or define them globally within the package.
 
+== Customizing GUI
+
+The GUI for this lab uses link:https://www.patternfly.org/[PatternFly], an open source UI framework for enterprise web applications.
+The GUI design uses the sample code from link:http://www.patternfly.org/pattern-library/navigation/vertical-navigation/#overview[Vertical Navigation] template.
+
+You can install PatternFly on your local system and easily build amazing UIs. Visit link:https://github.com/patternfly/patternfly[PatternFly Github Repo] for details.
+
+
 [.text-center]
 image:icons/icon-previous.png[align=left, width=128, link=conclusion.html] image:icons/icon-home.png[align="center",width=128, link=lab_content.html]

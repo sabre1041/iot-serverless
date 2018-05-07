@@ -8,6 +8,8 @@
 
 Geofence is a virtual perimeter for a geographic area.  A geofence can be set dynamically e.g. circle  around a center point or defined as a boundary around an area. Geofencing can be used for several IoT use cases including asset tracking, security & surveillance, retail etc. In the use case for this lab, factory equipments are geofenced by their assigned location.
 
+image::geofence-1.png[Geofence]
+
 === Haversine formula
 
 To determine whether something is within its geofence, haversine formula is used. The haversine formula determines the great-circle distance between two points on a sphere given their longitudes and latitudes.
@@ -21,13 +23,13 @@ For any two points on a sphere, the haversine of the central angle between them 
 a = sin²(Δφ/2) + cos φ1 ⋅ cos φ2 ⋅ sin²(Δλ/2)
 c = 2 ⋅ atan2( √a, √(1−a) )
 d = R ⋅ c
-where 
+where
 φ is latitude, λ is longitude, R is earth’s radius (6,371km)
 ----
 
-NOTE: All angles need to be in radians to pass to trig functions +
+NOTE: All angles need to be in radians to pass to trig functions
 
-Source: link:https://www.movable-type.co.uk/scripts/latlong.html[https://www.movable-type.co.uk/scripts/latlong.html]
+_Source: link:https://www.movable-type.co.uk/scripts/latlong.html[https://www.movable-type.co.uk/scripts/latlong.html]_
 
 The value needs to be converted from degrees to radians using the formula:
 
@@ -225,7 +227,7 @@ For more comprehensive documentation, see
 	http://docs.mongodb.org/
 Questions? Try the support group
 	http://groups.google.com/group/mongodb-user
-> 
+>
 ----
 
 The _dbInsert_ action persists data into a collection called _results_. Query the values of the collection by executing the following command:

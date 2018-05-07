@@ -4,7 +4,8 @@
 
 = Lab 0: Lab Environment & Resources
 
-IMPORTANT: TODO: Need to provide introductory information about lab environment
+== Lab Environment
+This lab utilizes an environment that has already been provisioned using Red Hat CloudForms to deploy infrastructure needed our lab on Ravello. It is deployed as a runtime application consisting of 5 VMs as well as the overall network configuration. Red Hat OpenShift Container Platform 3.9 has already been deployed for us.
 
 OpenShift environment for this lab consists of the following systems:
 
@@ -92,7 +93,7 @@ Password: *r3dh4t1!*
 
 The OpenShift catalog should be shown upon successful authentication
 
-image::ocp-catalog.png[Request GUID]
+image::ocp-catalog.png[OpenShift Catalog]
 
 == Lab Resources
 

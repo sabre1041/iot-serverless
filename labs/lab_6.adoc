@@ -4,6 +4,7 @@
 
 = Lab 6: Connecting into OpenWhisk
 
+== Trigger Limitations
 Now that the AMQ broker is up and running within OpenShift and able to accept traffic sent by IoT assets using the MQTT protocol, how these messages are consumed by OpenWhisk so that they can be used by the actions previously becomes the next area of concern.
 
 So far, our primary entrypoint for firing actions has been through a Trigger. However, since the MQTT transport is an eventing based protocol where messages are streamed, the use of triggers can be a limiting factor. OpenWhisk provides an alternative option that builds on top of the concept of triggers and supports streaming events onto the platform called Feeds.
@@ -90,7 +91,7 @@ A new build should be automatically triggered. Verify the build has started by r
  $  oc get builds -l application=mqtt-provider
 
  NAME              TYPE      FROM          STATUS    STARTED          DURATION
-mqtt-provider-1   Source    Git@fa9f79c   Running   26 seconds ago   
+mqtt-provider-1   Source    Git@fa9f79c   Running   26 seconds ago
 
 ----
 

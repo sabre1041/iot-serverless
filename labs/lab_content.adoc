@@ -6,6 +6,11 @@ Andrew Block <ablock@redhat.com>, Ishu Verma <iverma@redhat.com>
 :icons: font
 :source-highlighter: prettify
 
+== Summary
+This lab provides step by step instructions on how to use Serverless architecture for IoT. The lab uses Red Hat OpenShift Container Platform and serverless architecture to execute on-demand functions in response to IoT events. Main components of the lab include setting up Apache OpenWhisk, building functions and deploying these functions to OpenWhisk.
+
+
+
 .Lab Contents
 ****
 * link:tech_overview.html[*Technology Overview*]

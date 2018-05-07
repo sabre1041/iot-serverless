@@ -7,7 +7,7 @@
 OpenWhisk can be deployed using the template provided by OpenWhisk on OpenShift project.
 Each component of OpenWhisk will be running in its own container.
 
-Create a new project in OpenShift called _openwhisk_:
+* Create a new project in OpenShift called _openwhisk_:
 
 [source,bash]
 ----
@@ -21,7 +21,7 @@ You can add applications to this project with the 'new-app' command. For example
 to build a new example application in Ruby.
 ----
 
-Deploy OpenWhisk by instantiating the template
+* Deploy OpenWhisk by instantiating the template
 
 [source,bash]
 ----
@@ -30,7 +30,7 @@ $ oc process -f https://raw.githubusercontent.com/projectodd/openwhisk-openshift
 
 NOTE: A large number of resources will be created. It will take a few minutes to each of the resources to fully deploy to the OpenWhisk project.
 
-Use watch command to monitor the progress:
+* Use watch command to monitor the progress:
 
 [source,bash]
 ----
@@ -41,7 +41,7 @@ Once all pods are in the “Running” or “Completed state”, hit CTRL+C to b
 
 NOTE: Pods may initially report in Error status. This condition should resolve itself in a few moments.
 
-Check the status of deployment:
+* Check the status of deployment:
 
 [source,bash]
 ----
@@ -65,7 +65,7 @@ wskinvoker-00-6-prewarm-nodejs6               1/1       Running     0          1
 ----
 
 
-The system is ready when the controller recognizes the invoker as healthy:
+* Verify that system is ready by checking if controller recognizes the invoker as healthy:
 
 [source,bash]
 ----
@@ -80,13 +80,13 @@ OpenWhisk has been successfully deployed when `0 -> Healthy` appears in the log 
 
 == Verify OpenWhisk Deployment using OpenShift web console
 
-Navigate to the following url in the browser:
+* Navigate to the following url in the browser:
 
 link:https://infranode-<GUID>.generic.opentlc.com:8443[https://infranode-<GUID>.generic.opentlc.com:8443]
 
 TIP: OpenShift web UI access url is provided in the screen splash when you ssh into the system
 
-Click on the project name (OpenWhisk) in the upper right corner. A successful deployment will look like the following:
+* Click on the project name (OpenWhisk) in the upper right corner. A successful deployment will look like the following:
 
 image::openwhisk-deployment-ui.png[]
 
@@ -94,7 +94,7 @@ image::openwhisk-deployment-ui.png[]
 
 `wsk` is the CLI to interact with OpenWhisk services which has already been downloaded on this system.  The `wsk` CLI needs to be to be configured to be able to interact with OpenWhisk deployment.
 
-Use the following commands to configure wsk:
+* Use the following commands to configure wsk:
 
 [source,bash]
 ----
@@ -115,7 +115,7 @@ IMPORTANT: Use the -i option with wsk to avoid the validation error triggered by
 
 === Validate OpenWhisk CLI configuration
 
-Use the following command validate the `wsk` CLI is operational:
+* Use the following command validate the `wsk` CLI is operational:
 
 [source,bash]
 ----

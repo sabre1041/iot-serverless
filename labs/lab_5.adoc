@@ -6,7 +6,7 @@
 
 == IoT Data Transports
 
-Due to its unique requirements (less compute capable devices, low power use, small message payload and large number of devices), IoT requires different data transport protocols than other use cases e.g. mobile, client/server or embedded. Some of the commonly used data transport protocols for IoT include MQTT, CoAP, LWM2M and AMQP. For this lab, MQTT is being used as the data transport for assets sending location data to message broker.
+Due to its unique requirements (less compute capable devices, low power use, small message payload and large number of devices), IoT data transport protocols needs are different than other use cases, say, mobile, client/server or embedded. Some of the commonly used data transport protocols for IoT are MQTT, CoAP, LWM2M and AMQP. For this lab, MQTT is being used as the data transport for assets sending location data to message broker.
 
 === Deploying AMQ
 
@@ -59,6 +59,6 @@ Navigate to link:https://infranode-<GUID>.generic.opentlc.com:8443[https://infra
 Select the _iot-serverless_ project on the righthand side and confirm both the _broker-amq_ and _broker-drainer_ pods are running as seen below:
 
 image::amq-deployment.png[]
- 
+
 [.text-center]
 image:icons/icon-previous.png[align=left, width=128, link=lab_4.html] image:icons/icon-home.png[align="center",width=128, link=lab_content.html] image:icons/icon-next.png[align="right"width=128, link=lab_6.html]
