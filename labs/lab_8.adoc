@@ -162,4 +162,4 @@ More information about the selected asset is also displayed at the bottom:
 image::image8.png[Asset Info]
 
 [.text-center]
-image:icons/icon-previous.png[align=left, width=128, link=lab_7.html] image:icons/icon-home.png[align="center",width=128, link=lab_content.html] image:icons/icon-next.png[align="right"width=128, link=lab_8.html]
+image:icons/icon-previous.png[align=left, width=128, link=lab_7.html] image:icons/icon-home.png[align="center",width=128, link=lab_content.html] image:icons/icon-next.png[align="right"width=128, link=lab_9.html]
