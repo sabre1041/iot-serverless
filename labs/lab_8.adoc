@@ -32,15 +32,15 @@ First, expand **clientConnectors**. You will notice two child objects, _mqtt_ an
 
 image::amq-client-connectors.png[AMQ Console Overview]
 
-Next, expand **Topic**. Each IoT asset communicates on a topic starting with `.sf`. The JMS selector _.sf.>_ is also present and if you expand the folder, you will see the _mqtt-provider_ which confirms that the OpenWhisk feed was successfully registered to the broker through the feed provider. 
+Next, expand **Topic**. Each IoT asset communicates on a topic starting with `.sf`. The JMS selector _.sf.>_ is also present and if you expand the folder, you will see the _mqtt-provider_ which confirms that the OpenWhisk feed was successfully registered to the broker through the feed provider.
 
-image::amq-topics.png[AMQ Console Overview] 
+image::amq-topics.png[AMQ Console Overview]
 
 Now, select any one of the topics (starting with _sf._) on the left hand side underneath the _Topic_ dropdown. The various properties for the topic are displayed on the right side. Locate the _Enqueue Count_ and _Dequeue Count_. They each should have a value greater than 0 and their values should also match. This represents that the broker received a certain number of messages from the IoT asset (Enqueue) and that the feed provider consumed a certain number of messages (Dequeue).
 
 === Verifying Messages Were Sent to OpenWhisk
 
-We confirmed that the Feed Provider consumed the messages off of the topics, however, we should also confirm that those messages were then sent to the _iotServerlessTrigger_. 
+In the previous section, we confirmed that the Feed Provider consumed the messages off of the topics, however, we should also confirm that those messages were then sent to the _iotServerlessTrigger_.
 
 View the logs from the feed provider pod
 
@@ -56,7 +56,7 @@ A number of log messages similar to the output above should be seen (one for eac
 
 === Viewing Results in the Database
 
-At this point, OpenWhisk has accepted the request that was sent from the feed provider to the _iotServerlessTrigger_. Given that we have validated the sequence action previously, we should be able to skip right to the database and verify results have been persisted. 
+At this point, OpenWhisk has accepted the request that was sent from the feed provider to the _iotServerlessTrigger_. Given that we have validated the sequence action previously, we should be able to skip right to the database and verify results have been persisted.
 
 Obtain a shell session in the MongoDB pod by executing the following command:
 
@@ -84,82 +84,8 @@ Finally list the rows in the _results_ table
 
 The entire end to end flow is validated if records are returned.
 
-Exit out of the MongoDB shell and pod. 
+Exit out of the MongoDB shell and pod.
 
-
-== View data in UI Application
-
-To visualize the data that has been sent by the software simulator and processed through the set of OpenWhisk functions, a Patternfly based UI app will be deployed that will show the results on a geographical map. The app will show the geofence of each asset and description of the selected asset. If an asset crosses its geofence, then an alert will be shown on the map. The google map API is being used to display the location of assets and geofence on the map. The source for the frontend application is located in the `iot-serverless-ui/src/main/resources/static` folder.
-
-=== Deploy the UI Application
-
-Templates have been created to support the building of a custom image containing the application along with the deployment to OpenShift.
-
-First, instantiate the template to build the image:
-
-source,bash]
-----
-$ oc process -f applier/templates/ui-build.yml | oc apply -f-
-----
-A new BuildConfig and ImageStream will be created along with the triggering of the Source-to-Image based build in OpenShift.
-
-* A new build should be automatically triggered. Verify the build has started by running the following command:
-
-source,bash]
-----
-$ oc get builds -l application=ui
-----
-
-* When a build is present and running, the logs from the build execution can be seen using the following command:
-
-source,bash]
-----
-$ oc logs -f builds/<build_name>
-----
-
-When the image has been built successfully, another template can be instantiated to create the associated DeploymentConfig, Service and the Route exposing the application outside the cluster. A single parameter must be provided with the name of the MongoDB service which is used to connect to the backend persistent store within the iot-serverless project.
-
-* Execute the following command to instantiate the software sensor deployment template.
-
-source,bash]
-----
-$ oc -p MONGODB_SERVICE=mongodb process -f applier/templates/ui-deployment.yml | oc apply -f-
-----
-
-* To access the newly deployed application, execute the following command to get the url of the from the route:
-
-source,bash]
-----
-$ oc get routes
-----
-
-* In the browser, navigate to the url listed in the HOST column.
-
-Alternatively, OpenShift web console can be used to access the UI application.
-
-* Click on the UI pod to view the expanded view:
-
-image::image11.png[UI App Expand]
-
-* Click on the listed route:
-
-image::image10.png[UI App URL]
-
-UI app is will display the real time location of assets on the map:
-
-image::image4.png[UI App]
-
-* Select an asset by clicking on its marker. Selected asset will display a larger marker (1) and its geofence (2):
-
-image::image12.png[Asset Fence In]
-
-If an asset has crossed it geofence (1), a warning marker (2) will be displayed:
-
-image::image9.png[Asset Fence Out]
-
-More information about the selected asset is also displayed at the bottom:
-
-image::image8.png[Asset Info]
 
 [.text-center]
 image:icons/icon-previous.png[align=left, width=128, link=lab_7.html] image:icons/icon-home.png[align="center",width=128, link=lab_content.html] image:icons/icon-next.png[align="right"width=128, link=lab_9.html]

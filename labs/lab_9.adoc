@@ -4,10 +4,10 @@
 
 = Lab 9: Visualizing the Data
 
+== View data in UI
 In the previous lab, the entire lab was validated which resulted in asset data being stored in MongoDB. While we have seen the raw data within the database, to express the data visually, a user interface will be deployed to highlight several of the concepts emphasized in this lab.
 
-== View data in UI Application
-
+=== UI Application
 To visualize the data that has been sent by the software simulator and processed through the set of OpenWhisk functions, a Patternfly based UI app will be deployed that will show the results on a geographical map. The app will show the geofence of each asset and description of the selected asset. If an asset crosses its geofence, then an alert will be shown on the map. The google map API is being used to display the location of assets and geofence on the map. The source for the frontend application is located in the `iot-serverless-ui/src/main/resources/static` folder.
 
 === Deploy the UI Application
@@ -34,7 +34,7 @@ A new build should be automatically triggered. Verify the build has started by r
  $  oc get builds -l application=ui
 
  NAME                TYPE      FROM          STATUS    STARTED              DURATION
-ui-1      Source    Git@bf8b87e   Running   About a minute ago   
+ui-1      Source    Git@bf8b87e   Running   About a minute ago
 ----
 
 When a build is present and running, the logs from the build execution can be seen using the following command:

@@ -28,7 +28,8 @@ This lab provides step by step instructions on how to use Serverless architectur
 * link:lab_5.html[*Lab 5: Deploy IoT Components*]
 * link:lab_6.html[*Lab 6: Connecting into OpenWhisk*]
 * link:lab_7.html[*Lab 7: Software Sensor Application*]
-* link:lab_8.html[*Lab 8: Visualizing Data*]
+* link:lab_8.html[*Lab 8: Validate The End to End Flow*]
+* link:lab_9.html[*Lab 9: Visualizing Data*]
 * link:conclusion.html[*Conclusion*]
 * link:advance_lab.html[*Extra Labs*]
 ****
