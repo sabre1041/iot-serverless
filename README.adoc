@@ -1,0 +1,24 @@
+= Serverless for IoT lab
+Andrew Block <ablock@redhat.com>, Ishu Verma <iverma@redhat.com>
+:homepage: https://github.com/sabre1041/iot-serverless
+:imagesdir: images
+:icons: font
+:source-highlighter: prettify
+
+== Overview
+This repository provides content for Serverless of IoT lab.
+
+The lab uses Red Hat OpenShift Container Platform and serverless architecture to execute on-demand functions in response to IoT events. Main components of the lab include setting up Apache OpenWhisk, building functions and deploying these functions to OpenWhisk.
+
+=== Lab Resources
+The repository contains the following resources:
+
+* *Functions* (`iot-serverless-openwhisk-functions`): OpenWhisk actions to support values transmitted by IoT assets
+* *Applier* (`applier`): Declarative set of OpenShift resources. Components organized for automated application using the link:https://github.com/redhat-cop/openshift-applier[openshift-applier] framework.
+* *Software Sensor* (`iot-serverless-software-sensor`): Simulated software sensor representing IoT assets
+* *Feeds* (`iot-serverless-mqtt-feed`): OpenWhisk feed action and provider
+* *Data Visualization* (`iot-serverless-ui`): UI application to display values transmitted by IoT assets
+
+=== Lab Guide
+For step by step instructions on how to use this lab are available at:
+link:https://sabre1041.github.io/iot-serverless/lab_content.html[*Serverless for IoT Lab Guide*]
