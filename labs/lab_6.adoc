@@ -141,10 +141,57 @@ Now recreate the trigger to also denote the feed that should be used as the even
 
 [source,bash]
 ----
- $ wsk -i trigger create iotServerlessTrigger --feed iot-serverless/mqttFeed -p topic “.sf.>”
+ $ wsk -i trigger create iotServerlessTrigger --feed iot-serverless/mqttFeed -p topic ".sf.>"
+
+ok: invoked /_/iot-serverless/mqttFeed with id b7f43c780eca4686b43c780eca1686ec
+{
+    "activationId": "b7f43c780eca4686b43c780eca1686ec",
+    "annotations": [
+        {
+            "key": "path",
+            "value": "whisk.system/iot-serverless/mqttFeed"
+        },
+        {
+            "key": "waitTime",
+            "value": 45
+        },
+        {
+            "key": "kind",
+            "value": "nodejs:6"
+        },
+        {
+            "key": "limits",
+            "value": {
+                "logs": 10,
+                "memory": 256,
+                "timeout": 60000
+            }
+        },
+        {
+            "key": "initTime",
+            "value": 334
+        }
+    ],
+    "duration": 556,
+    "end": 1525646148778,
+    "logs": [],
+    "name": "mqttFeed",
+    "namespace": "whisk.system",
+    "publish": false,
+    "response": {
+        "result": {
+            "done": true
+        },
+        "status": "success",
+        "success": true
+    },
+    "start": 1525646148222,
+    "subject": "whisk.system",
+    "version": "0.0.1"
+}
 ----
 
-If no error was returned, the trigger was successfully registered with the provider. This can be confirmed by viewing the logs for the _mqtt-provider_ pod by executing the following command:
+A response with `"success": true` indicates the trigger was successfully registered with the provider. This can also be confirmed by viewing the logs for the _mqtt-provider_ pod by executing the following command:
 
 [source,bash]
 ----
@@ -152,6 +199,19 @@ If no error was returned, the trigger was successfully registered with the provi
 
  2018-05-05 18:22:29.057  INFO 1 --- [nio-8080-exec-7] c.r.i.controller.FeedProviderController  : Trigger Name: /_/iotServerlessTrigger
  2018-05-05 18:22:29.242  INFO 1 --- [nio-8080-exec-7] c.redhat.iot.service.TriggerDataService  : Saving Trigger
+----
+
+=== Reenable the Rule
+
+A consequence of deleting the _iotServerlessTrigger_ trigger in the previous section resulted in the `iotServerlessRule` becoming disabled. This occurred because the reference to the trigger was removed. Even though the trigger was recreated using a feed, the rule continues to remain disabled.
+
+Reenable the rule by executing the following command:
+
+[source,bash]
+----
+ $ wsk -i rule enable iotServerlessRule
+
+ ok: enabled rule iotServerlessRule
 ----
 
 [.text-center]

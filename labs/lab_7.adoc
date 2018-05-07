@@ -20,7 +20,7 @@ First, instantiate the template to build the image from the root of the project:
 
 [source,bash]
 ----
- $ /home/lab-user/iot-serverless/
+ $ cd /home/lab-user/iot-serverless/
  $ oc process -f applier/templates/software-sensor-build.yml | oc apply -f-
 
  imagestream "software-sensor" created
@@ -100,7 +100,7 @@ With the application running, access the software-sensor logs to confirm that it
  2018-05-04 05:26:37.352  INFO 1 --- [    scheduler-8] com.redhat.iot.AssetRunner               : Running Scheduled Task for Asset: Chemical Pump LX-222 - Iteration: 4 - Latitude: 37.784250 - Longitude: -122.401858
 ----
 
-If no errors are observed, the deployment of the software sensor was successful.
+If no errors are observed, the deployment of the software sensor was successful and the IoT assets are transmitting values to the AMQ broker.
 
 [.text-center]
 image:icons/icon-previous.png[align=left, width=128, link=lab_6.html] image:icons/icon-home.png[align="center",width=128, link=lab_content.html] image:icons/icon-next.png[align="right"width=128, link=lab_8.html]
