@@ -5,8 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.7">
-<meta name="author" content="Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;">
-<title>Serverless for IoT lab</title>
+<title>Technology Overview</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -434,90 +433,103 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Serverless for IoT lab</h1>
-<div class="details">
-<span id="author" class="author">Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;</span><br>
-</div>
+<h1>Technology Overview</h1>
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_summary">Summary</h2>
+<h2 id="_serverless">Serverless</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This lab provides step by step instructions on how to use Serverless architecture for IoT. The lab uses Red Hat OpenShift Container Platform and serverless architecture to execute on-demand functions in response to IoT events. Main components of the lab include setting up Apache OpenWhisk, building functions and deploying these functions to OpenWhisk.</p>
+<p>Serverless refers to the concept of building and running applications that do not require server management. Serverless allows for a finer-grained deployment model where applications, bundled as one or more functions, are uploaded to a platform and then executed, scaled, and billed in response to the exact demand needed at that moment. Developers using serverless no longer need to spend time and resources on server provisioning, maintenance, updates, scaling, and capacity planning.</p>
 </div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Lab Contents</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Servers are still required to run a serverless platform. The provider will need to manage servers (or virtual machines or containers) and deploy the serverless platform for an external or internal customers.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_serverless_use_cases">Serverless use cases</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Serverless approach is a good choice when the workload is:</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="tech_overview.html"><strong>Technology Overview</strong></a></p>
+<p>Asynchronous, concurrent, easy to parallelize into independent units of work</p>
 </li>
 <li>
-<p><a href="iot_usecase.html"><strong>Business Use Case : IoT</strong></a></p>
+<p>Infrequent or has sporadic demand, with large, unpredictable variance in scaling requirements</p>
 </li>
 <li>
-<p><a href="lab_0.html"><strong>Lab 0: Lab Environment &amp; Resources</strong></a></p>
+<p>Stateless, ephemeral, without a major need for instantaneous cold start time</p>
 </li>
 <li>
-<p><a href="lab_1.html"><strong>Lab 1: Deploy OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_2.html"><strong>Lab 2: Deploy MongoDB</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html"><strong>Lab 3: Create OpenWhisk Entities</strong></a></p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="file:lab_3.html#_actions"><strong>Actions</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_organizing_resources_as_packages"><strong>Packages</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_introduction_to_triggers"><strong>Triggers</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_connecting_triggers_to_actions_using_rules"><strong>Rules</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html#_creating_a_sequence_of_actions"><strong>Sequences</strong></a></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><a href="lab_4.html"><strong>Lab 4: Use Geofencing &amp; Data Store</strong></a></p>
-</li>
-<li>
-<p><a href="lab_5.html"><strong>Lab 5: Deploy IoT Components</strong></a></p>
-</li>
-<li>
-<p><a href="lab_6.html"><strong>Lab 6: Connecting into OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_7.html"><strong>Lab 7: Software Sensor Application</strong></a></p>
-</li>
-<li>
-<p><a href="lab_8.html"><strong>Lab 8: Validate The End to End Flow</strong></a></p>
-</li>
-<li>
-<p><a href="lab_9.html"><strong>Lab 9: Visualizing Data</strong></a></p>
-</li>
-<li>
-<p><a href="conclusion.html"><strong>Conclusion</strong></a></p>
-</li>
-<li>
-<p><a href="advance_lab.html"><strong>Extra Labs</strong></a></p>
+<p>Highly dynamic in terms of changing business requirements that drive a need for accelerated developer velocity</p>
 </li>
 </ul>
 </div>
 </div>
+</div>
+<div class="sect1">
+<h2 id="_function_as_a_service_faas">Function as a Service (FaaS)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>FaaS is a type of serverless computing that typically provides event-driven computing. Developers run and manage application code with functions that are triggered by events. Developers deploy small units of code to the FaaS, which are executed as needed as discrete actions, scaling without the need to manage servers or any other underlying infrastructure.</p>
+</div>
+<div class="paragraph">
+<p>Popularized by AWS Lambda, there are several other FaaS offerings in the market Azure Functions, IBM Cloud Functions, Google Cloud Functions etc.</p>
+</div>
+<div class="paragraph">
+<p>Apache OpenWhisk is a serverless, open source cloud platform that executes functions in response to events. OpenWhisk can be deployed on public cloud, premises or a combination of both (hybrid).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_using_serverless_for_iot">Using serverless for IoT</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Internet of Things (IoT) is expected to generate a massive and diverse range of data types presenting a unique challenges for back end services.  The back end services must be able to quickly respond and scale in response to sudden influx of messages. Serverless functions can efficiently manage and filter messages from IoT devices. They can both scale elastically and shield other services downstream from the load. Some of the examples of using serverless for IoT include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Executing logic in response to device data values</p>
+</li>
+<li>
+<p>Performing analytics on IoT sensor messages</p>
+</li>
+<li>
+<p>Handling stream processing</p>
+</li>
+<li>
+<p>Serving machine learning and AI models</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_deploying_your_own_serverless_solution">Deploying your own serverless solution</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this lab, an IoT solution will be built with Red Hat OpenShift Container Platform and serverless architecture to execute on-demand functions in response to IoT events. Main components of the lab include setting up Apache OpenWhisk, building functions and deploying these functions to OpenWhisk.</p>
+</div>
+<div class="paragraph">
+<p>Reference:
+<a href="https://github.com/cncf/wg-serverless/tree/master/whitepaper">https://github.com/cncf/wg-serverless/tree/master/whitepaper</a></p>
 </div>
 <div class="paragraph text-center">
-<p><span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span> <span class="image"><a class="image" href="tech_overview.html"><img src="images/icons/icon-next.png" alt="icon next" width="128"></a></span></p>
+<p><span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-previous.png" alt="icon previous" width="128"></a></span> <span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span> <span class="image"><a class="image" href="iot_usecase.html"><img src="images/icons/icon-next.png" alt="icon next" width="128"></a></span></p>
 </div>
 </div>
 </div>

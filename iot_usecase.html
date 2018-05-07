@@ -5,8 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.7">
-<meta name="author" content="Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;">
-<title>Serverless for IoT lab</title>
+<title>Business Use Case: IoT</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -434,90 +433,34 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Serverless for IoT lab</h1>
-<div class="details">
-<span id="author" class="author">Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;</span><br>
-</div>
+<h1>Business Use Case: IoT</h1>
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_summary">Summary</h2>
+<h2 id="_iot_overview">IoT Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This lab provides step by step instructions on how to use Serverless architecture for IoT. The lab uses Red Hat OpenShift Container Platform and serverless architecture to execute on-demand functions in response to IoT events. Main components of the lab include setting up Apache OpenWhisk, building functions and deploying these functions to OpenWhisk.</p>
+<p>IDC defines Internet of Things (IoT) as a network of uniquely identifiable end points (or ‘things’) that communicate bi-directionally without human interaction using IP connectivity. For consumers, this could mean ability to control the thermostat, doors, irrigation system from across the world but for businesses, IoT can create new opportunities to connect with customers and partners and achieve operational efficiencies. IoT has potential to transform entire industries from transportation, retail, oil &amp; gas, utilities to stadiums.</p>
 </div>
-<div class="sidebarblock">
+<div class="paragraph">
+<p>Vast numbers of endpoints (smart sensors, GPS devices, transponders, handheld devices), will generate massive volume of data. Once data from millions of devices is collected, it needs to be acted on immediately or transformed, summarized and stored to be acted on later.</p>
+</div>
+<div class="sect2">
+<h3 id="_iot_use_case">IoT Use Case</h3>
+<div class="paragraph">
+<p>This lab demonstrates how Serverless can be used for IoT use cases that require analytics of IoT device messages. In the use case for this lab, a factory wants to closely monitor critical assets through their lifecycle to improve operational efficiencies.  Each equipment is assigned to a specific area (geofence) in the factory. Equipments advertise their location coordinates (sent over mqtt protocol). This location data is transformed, enhanced and stored in a database for persistent storage using various functions. If an equipment moves outside its geofence, an alert is triggered using another function.</p>
+</div>
+<div class="paragraph">
+<p>Equipment location is visualized on a geographical map using Google map API. Google Geolocation API is used to show each equipment’s geofence. Map data is dynamically updated with different markers used to indicate if an equipment is within its geofence or not.</p>
+</div>
+<div class="imageblock">
 <div class="content">
-<div class="title">Lab Contents</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="tech_overview.html"><strong>Technology Overview</strong></a></p>
-</li>
-<li>
-<p><a href="iot_usecase.html"><strong>Business Use Case : IoT</strong></a></p>
-</li>
-<li>
-<p><a href="lab_0.html"><strong>Lab 0: Lab Environment &amp; Resources</strong></a></p>
-</li>
-<li>
-<p><a href="lab_1.html"><strong>Lab 1: Deploy OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_2.html"><strong>Lab 2: Deploy MongoDB</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html"><strong>Lab 3: Create OpenWhisk Entities</strong></a></p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="file:lab_3.html#_actions"><strong>Actions</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_organizing_resources_as_packages"><strong>Packages</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_introduction_to_triggers"><strong>Triggers</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_connecting_triggers_to_actions_using_rules"><strong>Rules</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html#_creating_a_sequence_of_actions"><strong>Sequences</strong></a></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><a href="lab_4.html"><strong>Lab 4: Use Geofencing &amp; Data Store</strong></a></p>
-</li>
-<li>
-<p><a href="lab_5.html"><strong>Lab 5: Deploy IoT Components</strong></a></p>
-</li>
-<li>
-<p><a href="lab_6.html"><strong>Lab 6: Connecting into OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_7.html"><strong>Lab 7: Software Sensor Application</strong></a></p>
-</li>
-<li>
-<p><a href="lab_8.html"><strong>Lab 8: Validate The End to End Flow</strong></a></p>
-</li>
-<li>
-<p><a href="lab_9.html"><strong>Lab 9: Visualizing Data</strong></a></p>
-</li>
-<li>
-<p><a href="conclusion.html"><strong>Conclusion</strong></a></p>
-</li>
-<li>
-<p><a href="advance_lab.html"><strong>Extra Labs</strong></a></p>
-</li>
-</ul>
-</div>
+<img src="images/IoT-serverless-workflow-2.png" alt="Lab Workflow">
 </div>
 </div>
 <div class="paragraph text-center">
-<p><span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span> <span class="image"><a class="image" href="tech_overview.html"><img src="images/icons/icon-next.png" alt="icon next" width="128"></a></span></p>
+<p><span class="image"><a class="image" href="tech_overview.html"><img src="images/icons/icon-previous.png" alt="icon previous" width="128"></a></span> <span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span> <span class="image"><a class="image" href="lab_0.html"><img src="images/icons/icon-next.png" alt="icon next" width="128"></a></span></p>
+</div>
 </div>
 </div>
 </div>

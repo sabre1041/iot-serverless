@@ -5,8 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.7">
-<meta name="author" content="Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;">
-<title>Serverless for IoT lab</title>
+<title>Lab 1: Deploy OpenWhisk</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -434,90 +433,233 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Serverless for IoT lab</h1>
-<div class="details">
-<span id="author" class="author">Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;</span><br>
-</div>
+<h1>Lab 1: Deploy OpenWhisk</h1>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="_summary">Summary</h2>
+<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>This lab provides step by step instructions on how to use Serverless architecture for IoT. The lab uses Red Hat OpenShift Container Platform and serverless architecture to execute on-demand functions in response to IoT events. Main components of the lab include setting up Apache OpenWhisk, building functions and deploying these functions to OpenWhisk.</p>
+<p>OpenWhisk can be deployed using the template provided by OpenWhisk on OpenShift project.
+Each component of OpenWhisk will be running in its own container.</p>
 </div>
-<div class="sidebarblock">
+<div class="ulist">
+<ul>
+<li>
+<p>Create a new project in OpenShift called <em>openwhisk</em>:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
 <div class="content">
-<div class="title">Lab Contents</div>
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ oc new-project openwhisk --display-name="OpenWhisk"
+Now using project "openwhisk" on server "https://infranode-&lt;GUID&gt;.generic.opentlc.com:8443".
+
+You can add applications to this project with the 'new-app' command. For example, try:
+
+   oc new-app centos/ruby-22-centos7~https://github.com/openshift/ruby-ex.git
+
+to build a new example application in Ruby.</code></pre>
+</div>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="tech_overview.html"><strong>Technology Overview</strong></a></p>
+<p>Deploy OpenWhisk by instantiating the template</p>
 </li>
-<li>
-<p><a href="iot_usecase.html"><strong>Business Use Case : IoT</strong></a></p>
-</li>
-<li>
-<p><a href="lab_0.html"><strong>Lab 0: Lab Environment &amp; Resources</strong></a></p>
-</li>
-<li>
-<p><a href="lab_1.html"><strong>Lab 1: Deploy OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_2.html"><strong>Lab 2: Deploy MongoDB</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html"><strong>Lab 3: Create OpenWhisk Entities</strong></a></p>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ oc process -f https://raw.githubusercontent.com/projectodd/openwhisk-openshift/master/persistent-template.yml | oc create -f -</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+A large number of resources will be created. It will take a few minutes to each of the resources to fully deploy to the OpenWhisk project.
+</td>
+</tr>
+</table>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="file:lab_3.html#_actions"><strong>Actions</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_organizing_resources_as_packages"><strong>Packages</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_introduction_to_triggers"><strong>Triggers</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_connecting_triggers_to_actions_using_rules"><strong>Rules</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html#_creating_a_sequence_of_actions"><strong>Sequences</strong></a></p>
+<p>Use watch command to monitor the progress:</p>
 </li>
 </ul>
 </div>
-</li>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ watch oc get pods</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once all pods are in the “Running” or “Completed state”, hit CTRL+C to break the “watch” command.<br></p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Pods may initially report in Error status. This condition should resolve itself in a few moments.
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
 <li>
-<p><a href="lab_4.html"><strong>Lab 4: Use Geofencing &amp; Data Store</strong></a></p>
-</li>
-<li>
-<p><a href="lab_5.html"><strong>Lab 5: Deploy IoT Components</strong></a></p>
-</li>
-<li>
-<p><a href="lab_6.html"><strong>Lab 6: Connecting into OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_7.html"><strong>Lab 7: Software Sensor Application</strong></a></p>
-</li>
-<li>
-<p><a href="lab_8.html"><strong>Lab 8: Validate The End to End Flow</strong></a></p>
-</li>
-<li>
-<p><a href="lab_9.html"><strong>Lab 9: Visualizing Data</strong></a></p>
-</li>
-<li>
-<p><a href="conclusion.html"><strong>Conclusion</strong></a></p>
-</li>
-<li>
-<p><a href="advance_lab.html"><strong>Extra Labs</strong></a></p>
+<p>Check the status of deployment:</p>
 </li>
 </ul>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ oc get pods
+
+NAME                                          READY     STATUS      RESTARTS   AGE
+alarmprovider-76d5655b8-vpp7s                 1/1       Running     0          1d
+controller-0                                  1/1       Running     2          1d
+couchdb-0                                     1/1       Running     0          1d
+install-catalog-hx8pc                         0/1       Completed   0          1d
+invoker-0                                     1/1       Running     0          1d
+nginx-c6f755db5-q627l                         1/1       Running     0          1d
+preload-openwhisk-runtimes-kfxcj              0/1       Completed   0          1d
+prune-activations-1525060800-n4drp            0/1       Completed   0          19h
+refresh-activations-1525132200-lt4h2          0/1       Completed   0          1m
+strimzi-cluster-controller-69dccbcc97-724ht   1/1       Running     0          1d
+strimzi-openwhisk-kafka-0                     1/1       Running     0          1d
+strimzi-openwhisk-zookeeper-0                 1/1       Running     0          1d
+wskinvoker-00-5-prewarm-nodejs6               1/1       Running     0          18h
+wskinvoker-00-6-prewarm-nodejs6               1/1       Running     0          18h</code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Verify that system is ready by checking if controller recognizes the invoker as healthy:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ oc logs -f controller-0 | grep "invoker status changed"
+
+[INFO] [#sid_121] [InvokerPool] invoker status changed to 0 -&gt; UnHealthy
+[INFO] [#sid_121] [InvokerPool] invoker status changed to 0 -&gt; Healthy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>OpenWhisk has been successfully deployed when <code>0 &#8594; Healthy</code> appears in the log above</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_verify_openwhisk_deployment_using_openshift_web_console">Verify OpenWhisk Deployment using OpenShift web console</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Navigate to the following url in the browser:</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><a href="https://infranode-&lt;GUID&gt;.generic.opentlc.com:8443">https://infranode-&lt;GUID&gt;.generic.opentlc.com:8443</a></p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+OpenShift web UI access url is provided in the screen splash when you ssh into the system
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Click on the project name (OpenWhisk) in the upper right corner. A successful deployment will look like the following:</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/openwhisk-deployment-ui.png" alt="openwhisk deployment ui">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_configure_the_openwhisk_cli">Configure the OpenWhisk CLI</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>wsk</code> is the CLI to interact with OpenWhisk services which has already been downloaded on this system.  The <code>wsk</code> CLI needs to be to be configured to be able to interact with OpenWhisk deployment.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Use the following commands to configure wsk:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ AUTH_SECRET=$(oc get secret whisk.auth -o yaml | grep "system:" | awk '{print $2}' | base64 --decode)
+$ wsk property set --auth $AUTH_SECRET --apihost $(oc get route/openwhisk --template="{{.spec.host}}")</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Successful configuration of wsk will show following output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk property set --auth $AUTH_SECRET --apihost $(oc get route/openwhisk --template="{{.spec.host}}")
+ok: whisk auth set. Run 'wsk property get --auth' to see the new value.
+ok: whisk API host set to openwhisk-openwhisk.apps-&lt;GUID&gt;.generic.opentlc.com</code></pre>
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Use the -i option with wsk to avoid the validation error triggered by the self-signed cert in the nginx service.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_validate_openwhisk_cli_configuration">Validate OpenWhisk CLI configuration</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Use the following command validate the <code>wsk</code> CLI is operational:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i list</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A list of entities in the <em>default</em> namespace will be displayed.</p>
 </div>
 <div class="paragraph text-center">
-<p><span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span> <span class="image"><a class="image" href="tech_overview.html"><img src="images/icons/icon-next.png" alt="icon next" width="128"></a></span></p>
+<p><span class="image"><a class="image" href="lab_0.html"><img src="images/icons/icon-previous.png" alt="icon previous" width="128"></a></span> <span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span> <span class="image"><a class="image" href="lab_2.html"><img src="images/icons/icon-next.png" alt="icon next" width="128"></a></span></p>
+</div>
 </div>
 </div>
 </div>

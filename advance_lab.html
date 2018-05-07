@@ -5,8 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.7">
-<meta name="author" content="Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;">
-<title>Serverless for IoT lab</title>
+<title>Extra Labs (Optional)</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -434,90 +433,29 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Serverless for IoT lab</h1>
-<div class="details">
-<span id="author" class="author">Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;</span><br>
-</div>
+<h1>Extra Labs (Optional)</h1>
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_summary">Summary</h2>
+<h2 id="_setting_default_parameters">Setting Default Parameters</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This lab provides step by step instructions on how to use Serverless architecture for IoT. The lab uses Red Hat OpenShift Container Platform and serverless architecture to execute on-demand functions in response to IoT events. Main components of the lab include setting up Apache OpenWhisk, building functions and deploying these functions to OpenWhisk.</p>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Lab Contents</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="tech_overview.html"><strong>Technology Overview</strong></a></p>
-</li>
-<li>
-<p><a href="iot_usecase.html"><strong>Business Use Case : IoT</strong></a></p>
-</li>
-<li>
-<p><a href="lab_0.html"><strong>Lab 0: Lab Environment &amp; Resources</strong></a></p>
-</li>
-<li>
-<p><a href="lab_1.html"><strong>Lab 1: Deploy OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_2.html"><strong>Lab 2: Deploy MongoDB</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html"><strong>Lab 3: Create OpenWhisk Entities</strong></a></p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="file:lab_3.html#_actions"><strong>Actions</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_organizing_resources_as_packages"><strong>Packages</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_introduction_to_triggers"><strong>Triggers</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_connecting_triggers_to_actions_using_rules"><strong>Rules</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html#_creating_a_sequence_of_actions"><strong>Sequences</strong></a></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><a href="lab_4.html"><strong>Lab 4: Use Geofencing &amp; Data Store</strong></a></p>
-</li>
-<li>
-<p><a href="lab_5.html"><strong>Lab 5: Deploy IoT Components</strong></a></p>
-</li>
-<li>
-<p><a href="lab_6.html"><strong>Lab 6: Connecting into OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_7.html"><strong>Lab 7: Software Sensor Application</strong></a></p>
-</li>
-<li>
-<p><a href="lab_8.html"><strong>Lab 8: Validate The End to End Flow</strong></a></p>
-</li>
-<li>
-<p><a href="lab_9.html"><strong>Lab 9: Visualizing Data</strong></a></p>
-</li>
-<li>
-<p><a href="conclusion.html"><strong>Conclusion</strong></a></p>
-</li>
-<li>
-<p><a href="advance_lab.html"><strong>Extra Labs</strong></a></p>
-</li>
-</ul>
+<p>One of the benefits of packages is the ability to define default parameters that can be automatically applied to actions. In the iot-serverless package that was created in the prior section, the formatInput action takes in two parameters, the name of the topic for which messages will be received from (topic) and a single string consisting of the latitude and longitude. When invoking the action, we could specify the parameters explicitly as done previously, or define them globally within the package.</p>
 </div>
 </div>
+</div>
+<div class="sect1">
+<h2 id="_customizing_gui">Customizing GUI</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The GUI for this lab uses <a href="https://www.patternfly.org/">PatternFly</a>, an open source UI framework for enterprise web applications.
+The GUI design uses the sample code from <a href="http://www.patternfly.org/pattern-library/navigation/vertical-navigation/#overview">Vertical Navigation</a> template.</p>
+</div>
+<div class="paragraph">
+<p>You can install PatternFly on your local system and easily build amazing UIs. Visit <a href="https://github.com/patternfly/patternfly">PatternFly Github Repo</a> for details.</p>
 </div>
 <div class="paragraph text-center">
-<p><span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span> <span class="image"><a class="image" href="tech_overview.html"><img src="images/icons/icon-next.png" alt="icon next" width="128"></a></span></p>
+<p><span class="image"><a class="image" href="conclusion.html"><img src="images/icons/icon-previous.png" alt="icon previous" width="128"></a></span> <span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span></p>
 </div>
 </div>
 </div>

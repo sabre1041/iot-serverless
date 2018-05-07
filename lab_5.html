@@ -5,8 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.7">
-<meta name="author" content="Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;">
-<title>Serverless for IoT lab</title>
+<title>Lab 5: Deploy IoT Components</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -434,90 +433,92 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Serverless for IoT lab</h1>
-<div class="details">
-<span id="author" class="author">Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;</span><br>
-</div>
+<h1>Lab 5: Deploy IoT Components</h1>
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_summary">Summary</h2>
+<h2 id="_iot_data_transports">IoT Data Transports</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This lab provides step by step instructions on how to use Serverless architecture for IoT. The lab uses Red Hat OpenShift Container Platform and serverless architecture to execute on-demand functions in response to IoT events. Main components of the lab include setting up Apache OpenWhisk, building functions and deploying these functions to OpenWhisk.</p>
+<p>Due to its unique requirements (less compute capable devices, low power use, small message payload and large number of devices), IoT data transport protocols needs are different than other use cases, say, mobile, client/server or embedded. Some of the commonly used data transport protocols for IoT are MQTT, CoAP, LWM2M and AMQP. For this lab, MQTT is being used as the data transport for assets sending location data to message broker.</p>
 </div>
-<div class="sidebarblock">
+<div class="sect2">
+<h3 id="_deploying_amq">Deploying AMQ</h3>
+<div class="paragraph">
+<p><a href="https://www.redhat.com/en/technologies/jboss-middleware/amq">Red Hat JBoss AMQ</a> provides fast, lightweight, and secure messaging  and supports AMQP, MQTT, STOMP, and WebSocket protocols. For this lab, a containerized xPaaS image of AMQ, designed for use with OpenShift, is being used. A series of templates are also available to streamline the deployment of AMQ onto OpenShift.</p>
+</div>
+<div class="paragraph">
+<p>Deploy the AMQ image to OpenShift by executing the following command which will instantiate the template that is already provided by the platform:</p>
+</div>
+<div class="listingblock">
 <div class="content">
-<div class="title">Lab Contents</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="tech_overview.html"><strong>Technology Overview</strong></a></p>
-</li>
-<li>
-<p><a href="iot_usecase.html"><strong>Business Use Case : IoT</strong></a></p>
-</li>
-<li>
-<p><a href="lab_0.html"><strong>Lab 0: Lab Environment &amp; Resources</strong></a></p>
-</li>
-<li>
-<p><a href="lab_1.html"><strong>Lab 1: Deploy OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_2.html"><strong>Lab 2: Deploy MongoDB</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html"><strong>Lab 3: Create OpenWhisk Entities</strong></a></p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="file:lab_3.html#_actions"><strong>Actions</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_organizing_resources_as_packages"><strong>Packages</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_introduction_to_triggers"><strong>Triggers</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_connecting_triggers_to_actions_using_rules"><strong>Rules</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html#_creating_a_sequence_of_actions"><strong>Sequences</strong></a></p>
-</li>
-</ul>
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ oc process -p MQ_USERNAME=iot-serverless -p MQ_PASSWORD=iot-serverless -p MQ_PROTOCOL=openwire,mqtt -p AMQ_MESH_DISCOVERY_TYPE=dns openshift//amq63-persistent | oc apply -f-
+
+service "broker-amq-amqp" created
+service "broker-amq-mqtt" created
+service "broker-amq-stomp" created
+service "broker-amq-tcp" created
+service "broker-amq-mesh" created
+deploymentconfig "broker-amq" created
+deploymentconfig "broker-drainer" created
+persistentvolumeclaim "broker-amq-claim" created</code></pre>
 </div>
-</li>
-<li>
-<p><a href="lab_4.html"><strong>Lab 4: Use Geofencing &amp; Data Store</strong></a></p>
-</li>
-<li>
-<p><a href="lab_5.html"><strong>Lab 5: Deploy IoT Components</strong></a></p>
-</li>
-<li>
-<p><a href="lab_6.html"><strong>Lab 6: Connecting into OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_7.html"><strong>Lab 7: Software Sensor Application</strong></a></p>
-</li>
-<li>
-<p><a href="lab_8.html"><strong>Lab 8: Validate The End to End Flow</strong></a></p>
-</li>
-<li>
-<p><a href="lab_9.html"><strong>Lab 9: Visualizing Data</strong></a></p>
-</li>
-<li>
-<p><a href="conclusion.html"><strong>Conclusion</strong></a></p>
-</li>
-<li>
-<p><a href="advance_lab.html"><strong>Extra Labs</strong></a></p>
-</li>
-</ul>
 </div>
+<div class="paragraph">
+<p>An AMQ broker with persistent storage will be created to support accepting MQTT messages from the IoT device along with the default Openwire protocol.</p>
+</div>
+<div class="paragraph">
+<p>A DeploymentConfig which dictates how an application will be deployed in OpenShift called <em>broker-amq</em> was created to manage the deployment of the Broker. To illustrate the configuration of the AMQ broker, describe the contents of the <em>broker-amq</em> DeploymentConfig:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ oc describe dc broker-amq</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Key items to note within the podTemplate is a container called broker-amq and the exposure of port 1883, which is the default port for the MQTT protocol along with an environment variable called AMQ_TRANSPORTS which enables both the OpenWire and MQTT protocols on the broker.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Confirm the broker and its supporting pod for managing persistent storage is running by verifying the status using the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ oc get pods -l application=broker
+
+NAME                     READY     STATUS    RESTARTS   AGE
+broker-amq-1-22dq4       1/1       Running   0          3m
+broker-drainer-1-z2wf5   1/1       Running   0          3m</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A READY column indicating 1/1 denotes the service is ready and available</p>
+</div>
+<div class="paragraph">
+<p>The state can also be confirmed in the OpenShift web console.</p>
+</div>
+<div class="paragraph">
+<p>Navigate to <a href="https://infranode-&lt;GUID&gt;.generic.opentlc.com:8443">https://infranode-&lt;GUID&gt;.generic.opentlc.com:8443</a></p>
+</div>
+<div class="paragraph">
+<p>Select the <em>iot-serverless</em> project on the righthand side and confirm both the <em>broker-amq</em> and <em>broker-drainer</em> pods are running as seen below:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/amq-deployment.png" alt="amq deployment">
 </div>
 </div>
 <div class="paragraph text-center">
-<p><span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span> <span class="image"><a class="image" href="tech_overview.html"><img src="images/icons/icon-next.png" alt="icon next" width="128"></a></span></p>
+<p><span class="image"><a class="image" href="lab_4.html"><img src="images/icons/icon-previous.png" alt="icon previous" width="128"></a></span> <span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span> <span class="image"><a class="image" href="lab_6.html"><img src="images/icons/icon-next.png" alt="icon next" width="128"></a></span></p>
+</div>
 </div>
 </div>
 </div>

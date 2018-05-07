@@ -5,8 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.7">
-<meta name="author" content="Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;">
-<title>Serverless for IoT lab</title>
+<title>Lab 4: Use Geofencing &amp; Data Store</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -434,90 +433,322 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Serverless for IoT lab</h1>
-<div class="details">
-<span id="author" class="author">Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;</span><br>
-</div>
+<h1>Lab 4: Use Geofencing &amp; Data Store</h1>
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_summary">Summary</h2>
+<h2 id="_geofencing">Geofencing</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This lab provides step by step instructions on how to use Serverless architecture for IoT. The lab uses Red Hat OpenShift Container Platform and serverless architecture to execute on-demand functions in response to IoT events. Main components of the lab include setting up Apache OpenWhisk, building functions and deploying these functions to OpenWhisk.</p>
+<p>Geofence is a virtual perimeter for a geographic area.  A geofence can be set dynamically e.g. circle  around a center point or defined as a boundary around an area. Geofencing can be used for several IoT use cases including asset tracking, security &amp; surveillance, retail etc. In the use case for this lab, factory equipments are geofenced by their assigned location.</p>
 </div>
-<div class="sidebarblock">
+<div class="imageblock">
 <div class="content">
-<div class="title">Lab Contents</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="tech_overview.html"><strong>Technology Overview</strong></a></p>
-</li>
-<li>
-<p><a href="iot_usecase.html"><strong>Business Use Case : IoT</strong></a></p>
-</li>
-<li>
-<p><a href="lab_0.html"><strong>Lab 0: Lab Environment &amp; Resources</strong></a></p>
-</li>
-<li>
-<p><a href="lab_1.html"><strong>Lab 1: Deploy OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_2.html"><strong>Lab 2: Deploy MongoDB</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html"><strong>Lab 3: Create OpenWhisk Entities</strong></a></p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="file:lab_3.html#_actions"><strong>Actions</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_organizing_resources_as_packages"><strong>Packages</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_introduction_to_triggers"><strong>Triggers</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_connecting_triggers_to_actions_using_rules"><strong>Rules</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html#_creating_a_sequence_of_actions"><strong>Sequences</strong></a></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><a href="lab_4.html"><strong>Lab 4: Use Geofencing &amp; Data Store</strong></a></p>
-</li>
-<li>
-<p><a href="lab_5.html"><strong>Lab 5: Deploy IoT Components</strong></a></p>
-</li>
-<li>
-<p><a href="lab_6.html"><strong>Lab 6: Connecting into OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_7.html"><strong>Lab 7: Software Sensor Application</strong></a></p>
-</li>
-<li>
-<p><a href="lab_8.html"><strong>Lab 8: Validate The End to End Flow</strong></a></p>
-</li>
-<li>
-<p><a href="lab_9.html"><strong>Lab 9: Visualizing Data</strong></a></p>
-</li>
-<li>
-<p><a href="conclusion.html"><strong>Conclusion</strong></a></p>
-</li>
-<li>
-<p><a href="advance_lab.html"><strong>Extra Labs</strong></a></p>
-</li>
-</ul>
+<img src="images/geofence-1.png" alt="Geofence">
 </div>
 </div>
+<div class="sect2">
+<h3 id="_haversine_formula">Haversine formula</h3>
+<div class="paragraph">
+<p>To determine whether something is within its geofence, haversine formula is used. The haversine formula determines the great-circle distance between two points on a sphere given their longitudes and latitudes.</p>
+</div>
+<div class="paragraph">
+<p>For any two points on a sphere, the haversine of the central angle between them is given by:</p>
+</div>
+<div class="paragraph">
+<p><strong>Haversine formula:</strong><br></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code>a = sin²(Δφ/2) + cos φ1 ⋅ cos φ2 ⋅ sin²(Δλ/2)
+c = 2 ⋅ atan2( √a, √(1−a) )
+d = R ⋅ c
+where
+φ is latitude, λ is longitude, R is earth’s radius (6,371km)</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+All angles need to be in radians to pass to trig functions
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><em>Source: <a href="https://www.movable-type.co.uk/scripts/latlong.html">https://www.movable-type.co.uk/scripts/latlong.html</a></em></p>
+</div>
+<div class="paragraph">
+<p>The value needs to be converted from degrees to radians using the formula:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code>Radians = degrees * (pi/180)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The JavaScript action implementing haversine formula is already provided for this lab. This action is located  <code>iot-serverless-openwhisk-functions/geofence/geofence.js</code>. Take a moment and familiarize yourself with the source code. It is important that no modifications to the file be made as it may impact the expected outcome of the lab.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_create_geofence_action">Create Geofence Action</h3>
+<div class="paragraph">
+<p>Using the provided function, make sure you are at the root of the project folder and use the <code>wsk</code> tool to create an action called <em>geofence</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ cd /home/lab-user/iot-serverless/
+$ wsk -i action update iot-serverless/geofence iot-serverless-openwhisk-functions/geofence/geofence.js
+
+ok: updated action iot-serverless/geofence</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Confirm the action has been created by describing the contents of the <em>iot-serverless</em> package.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i package get iot-serverless --summary
+
+package /whisk.system/iot-serverless
+   (parameters: none defined)
+ action /whisk.system/iot-serverless/geofence
+   (parameters: none defined)
+ action /whisk.system/iot-serverless/iotServerlessSequence
+   (parameters: none defined)
+ action /whisk.system/iot-serverless/enricher
+   (parameters: none defined)
+ action /whisk.system/iot-serverless/formatInput
+   (parameters: none defined)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally, since a new action was created, we will need to update the <em>iotServerlessSequence</em> sequence action so that the <em>geofence</em> action is added and executed after the <em>enricher</em> action.</p>
+</div>
+<div class="paragraph">
+<p>Update the sequence action by executing the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i action update iot-serverless/iotServerlessSequence --sequence iot-serverless/formatInput,iot-serverless/enricher,iot-serverless/geofence
+
+ok: updated action iot-serverless/iotServerlessSequence</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_verifying_the_geofence_action">Verifying the Geofence Action</h3>
+<div class="paragraph">
+<p>Lets see how to use this in a real life scenario of a factory that wants to monitor an asset called "DIN Rail power supply". This asset is expected to be located at (37.784393, -122.401399) and can move only within an assigned area (3m). This radius is within the spare inventory section in the warehouse. If this asset moves outside this assigned area (geofence), then an alert will be triggered. Let’s say the asset now reports its current location as (37.784420, -122.401399) which is outside its geofence then the action sequence should set a value of <code>alert: 1</code> in the payload.</p>
+</div>
+<div class="paragraph">
+<p>Test this scenario with the sequence we created above by directly invoking the sequence action:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i action invoke iot-serverless/iotServerlessSequence --param topic /sf/warehouse/power-supply --param data "37.784420 -122.401399" --result
+
+{
+    "alert": 1,
+    "center_latitude": "37.784393",
+    "center_longitude": "-122.401399",
+    "data": "37.784420 -122.401399",
+    "geofence_radius": "1.0",
+    "latitude": "37.784420",
+    "location": "Warehouse",
+    "longitude": "-122.401399",
+    "name": "DIN Rail power supply 240-24",
+    "picture": "DIN-Rail.jpg",
+    "topic": "/sf/warehouse/power-supply"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice how <code>"alert": 1</code> was part of the returned payload. This indicates that the geofence action calculated that the asset was outside of the permitted area. If the asset was within the geofenced region, then a value of <code>"alert": 0</code> would have been returned.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_inserting_records_into_the_database">Inserting Records into the Database</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The final step in the data flow after all of the prior actions have executed is that the records need to be persisted so that it may be retrieved at a later point in time. Records will be inserted into the MongoDB database through the use of an action called <em>dbInsert</em>. Since the connectivity requires database drivers and additional dependencies, a Node.js based function will be used once again.</p>
+</div>
+<div class="paragraph">
+<p>First, from the root of the project folder, navigate to the folder containing the source for the <em>dbInsert</em> action:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ cd /home/lab-user/iot-serverless/iot-serverless-openwhisk-functions/dbinsert</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Install all of the dependencies that are defined in the <em>package.json</em> file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ npm install</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To connect to MongoDB from the action, the properties are once again externalized using environmental variables. Fortunately, since the same persistent store is being used for this action as in the <em>enricher</em> action utilized in a prior lab, same same <em>.env</em> file can be reused.</p>
+</div>
+<div class="paragraph">
+<p>Copy the <em>.env</em> file from the <em>enricher</em> action to the current directory for the <em>dbInsert</em> action</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ cp ../enricher/.env .</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, package up the Node.js application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ npm run package</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a new action called iot-serverless/dbInsert by executing the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ npm run deploy
+
+&gt; iot-serverless-openwhisk-functions-dbinsert@1.0.0 deploy /home/lab-user/iot-serverless/iot-serverless-openwhisk-functions/dbinsert
+&gt; wsk -i action update iot-serverless/dbInsert dist/dbinsert.zip --kind nodejs:8
+
+ok: updated action iot-serverless/dbInsert</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Confirm the the action called iot-serverless/dbInsert has been created within the iot-serverless package:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i package get iot-serverless --summary
+
+package /whisk.system/iot-serverless
+   (parameters: none defined)
+ action /whisk.system/iot-serverless/dbInsert
+   (parameters: none defined)
+ action /whisk.system/iot-serverless/iotServerlessSequence
+   (parameters: none defined)
+ action /whisk.system/iot-serverless/geofence
+   (parameters: none defined)
+ action /whisk.system/iot-serverless/enricher
+   (parameters: none defined)
+ action /whisk.system/iot-serverless/formatInput
+   (parameters: none defined)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There should now be 5 actions displayed (4 normal actions and 1 sequence action)</p>
+</div>
+<div class="paragraph">
+<p>Update the sequence action to include all of the previously created actions:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i action update iot-serverless/iotServerlessSequence --sequence iot-serverless/formatInput,iot-serverless/enricher,iot-serverless/geofence,iot-serverless/dbInsert
+
+ok: updated action iot-serverless/iotServerlessSequence</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_validate_entire_sequence_of_action">Validate Entire Sequence of Action</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now that we have created the entire series of OpenWhisk actions tied together by a sequence action to process the data which will be transmitted from IoT assets, lets validate the entire flow which will result in a document entered into the MongoDb database.</p>
+</div>
+<div class="paragraph">
+<p>Yet again, fire the _iotServerlessTrigger _trigger using the same set of arguments that have been utilized previously:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i trigger fire iotServerlessTrigger --param topic /sf/boiler/controller --param data "37.784237 -122.401410"
+
+ok: triggered /_/iotServerlessTrigger with id c7da4755f81946df9a4755f81926df9b</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Determine the results of the activations from both the trigger and rule. A result similar to the following indicates the record was successfully saved to MongoDB.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">    "response": {
+        "status": "success",
+        "statusCode": 0,
+        "success": true,
+        "result": {
+            "result": "ok"
+        }
+    },</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Obtain a shell session in the MongoDB pod by executing the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ oc rsh $(oc get pods -l=deploymentconfig=mongodb -o 'jsonpath={.items[0].metadata.name}') bash -c "mongo 127.0.0.1:27017/\${MONGODB_DATABASE} -u \${MONGODB_USER} -p \${MONGODB_PASSWORD}"
+
+MongoDB shell version: 3.2.10
+connecting to: 127.0.0.1:27017/iotserverless
+Welcome to the MongoDB shell.
+For interactive help, type "help".
+For more comprehensive documentation, see
+	http://docs.mongodb.org/
+Questions? Try the support group
+	http://groups.google.com/group/mongodb-user
+&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <em>dbInsert</em> action persists data into a collection called <em>results</em>. Query the values of the collection by executing the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">&gt; db.results.find()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A single value should be returned similar to the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">{ "_id" : ObjectId("5aed26bbd9ca04f727a34329"), "name" : "Surface blow down controller", "location" : "Boiler room", "latitude" : "37.784237", "alert" : 0, "data" : "37.784237 -122.401410", "geofence_radius" : "1.0", "longitude" : "-122.401410", "picture" : "Blowdown-Controller.jpg", "topic" : "/sf/boiler/controller", "center_longitude" : "-122.401410", "center_latitude" : "37.784237", "date" : ISODate("2018-05-05T03:36:27.628Z") }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally, remove the test data by dropping the contents of the results collection as to not affect the actual data that will be entered later on</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">&gt; db.results.drop()
+
+true</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><em>Exit</em> out of the MongoDB shell</p>
+</div>
+<div class="paragraph">
+<p>Finally, <em>exit</em> out of the MongoDB pod</p>
+</div>
+<div class="paragraph">
+<p>At this point the OpenWhisk actions have been successfully been validated</p>
 </div>
 <div class="paragraph text-center">
-<p><span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span> <span class="image"><a class="image" href="tech_overview.html"><img src="images/icons/icon-next.png" alt="icon next" width="128"></a></span></p>
+<p><span class="image"><a class="image" href="lab_3.html"><img src="images/icons/icon-previous.png" alt="icon previous" width="128"></a></span> <span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span> <span class="image"><a class="image" href="lab_5.html"><img src="images/icons/icon-next.png" alt="icon next" width="128"></a></span></p>
 </div>
 </div>
 </div>

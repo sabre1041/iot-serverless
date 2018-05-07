@@ -5,8 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.7">
-<meta name="author" content="Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;">
-<title>Serverless for IoT lab</title>
+<title>Lab 9: Visualizing the Data</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -434,90 +433,160 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Serverless for IoT lab</h1>
-<div class="details">
-<span id="author" class="author">Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;</span><br>
-</div>
+<h1>Lab 9: Visualizing the Data</h1>
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_summary">Summary</h2>
+<h2 id="_view_data_in_ui">View data in UI</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This lab provides step by step instructions on how to use Serverless architecture for IoT. The lab uses Red Hat OpenShift Container Platform and serverless architecture to execute on-demand functions in response to IoT events. Main components of the lab include setting up Apache OpenWhisk, building functions and deploying these functions to OpenWhisk.</p>
+<p>In the previous lab, the entire lab was validated which resulted in asset data being stored in MongoDB. While we have seen the raw data within the database, to express the data visually, a user interface will be deployed to highlight several of the concepts emphasized in this lab.</p>
 </div>
-<div class="sidebarblock">
+<div class="sect2">
+<h3 id="_ui_application">UI Application</h3>
+<div class="paragraph">
+<p>To visualize the data that has been sent by the software simulator and processed through the set of OpenWhisk functions, a Patternfly based UI app will be deployed that will show the results on a geographical map. The app will show the geofence of each asset and description of the selected asset. If an asset crosses its geofence, then an alert will be shown on the map. The google map API is being used to display the location of assets and geofence on the map. The source for the frontend application is located in the <code>iot-serverless-ui/src/main/resources/static</code> folder.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_deploy_the_ui_application">Deploy the UI Application</h3>
+<div class="paragraph">
+<p>Templates have been created to support the building of a custom image containing the application along with the deployment to OpenShift.</p>
+</div>
+<div class="paragraph">
+<p>First, navigate to the root of the project folder and instantiate the template to build the image:</p>
+</div>
+<div class="listingblock">
 <div class="content">
-<div class="title">Lab Contents</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="tech_overview.html"><strong>Technology Overview</strong></a></p>
-</li>
-<li>
-<p><a href="iot_usecase.html"><strong>Business Use Case : IoT</strong></a></p>
-</li>
-<li>
-<p><a href="lab_0.html"><strong>Lab 0: Lab Environment &amp; Resources</strong></a></p>
-</li>
-<li>
-<p><a href="lab_1.html"><strong>Lab 1: Deploy OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_2.html"><strong>Lab 2: Deploy MongoDB</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html"><strong>Lab 3: Create OpenWhisk Entities</strong></a></p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="file:lab_3.html#_actions"><strong>Actions</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_organizing_resources_as_packages"><strong>Packages</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_introduction_to_triggers"><strong>Triggers</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_connecting_triggers_to_actions_using_rules"><strong>Rules</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html#_creating_a_sequence_of_actions"><strong>Sequences</strong></a></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><a href="lab_4.html"><strong>Lab 4: Use Geofencing &amp; Data Store</strong></a></p>
-</li>
-<li>
-<p><a href="lab_5.html"><strong>Lab 5: Deploy IoT Components</strong></a></p>
-</li>
-<li>
-<p><a href="lab_6.html"><strong>Lab 6: Connecting into OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_7.html"><strong>Lab 7: Software Sensor Application</strong></a></p>
-</li>
-<li>
-<p><a href="lab_8.html"><strong>Lab 8: Validate The End to End Flow</strong></a></p>
-</li>
-<li>
-<p><a href="lab_9.html"><strong>Lab 9: Visualizing Data</strong></a></p>
-</li>
-<li>
-<p><a href="conclusion.html"><strong>Conclusion</strong></a></p>
-</li>
-<li>
-<p><a href="advance_lab.html"><strong>Extra Labs</strong></a></p>
-</li>
-</ul>
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ cd /home/lab-user/iot-serverless/
+$ oc process -f applier/templates/ui-build.yml | oc apply -f-
+
+imagestream "ui" created
+buildconfig "ui" created</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>A new BuildConfig and ImageStream will be created along with the triggering of the <a href="https://docs.openshift.com/container-platform/latest/using_images/s2i_images/index.html">Source-to-Image</a> based build in OpenShift.</p>
+</div>
+<div class="paragraph">
+<p>A new build should be automatically triggered. Verify the build has started by running the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash"> $  oc get builds -l application=ui
+
+ NAME                TYPE      FROM          STATUS    STARTED              DURATION
+ui-1      Source    Git@bf8b87e   Running   About a minute ago</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When a build is present and running, the logs from the build execution can be seen using the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash"> $ oc logs -f builds/&lt;build_name&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When the image has been built successfully, another template can be instantiated to create the associated DeploymentConfig, Service and the Route exposing the application outside the cluster. A single parameter must be provided with the name of the MongoDB service which is used to connect to the backend persistent store within the <em>iot-serverless</em> project.</p>
+</div>
+<div class="paragraph">
+<p>Execute the following command to instantiate the software sensor deployment template.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ oc -p MONGODB_SERVICE=mongodb process -f applier/templates/ui-deployment.yml | oc apply -f-
+
+service "ui" created
+route "ui" created
+deploymentconfig "ui" created</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Verify the ui is active by verifying the status using the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ oc get pods -l application=ui
+
+NAME                    READY     STATUS    RESTARTS   AGE
+ui-1-v76rm   1/1       Running   0          1m</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A READY column indicating 1/1 denotes the service is ready and available</p>
+</div>
+<div class="paragraph">
+<p>To access the newly deployed application in a web browser, execute the following command to get the url of the from the route:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ oc get routes
+
+NAME      HOST/PORT                                         PATH      SERVICES   PORT       TERMINATION   WILDCARD
+ui        ui-iot-serverless.apps-&lt;GUID&gt;.generic.opentlc.com             ui         8080-tcp                 None</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the browser, navigate to the url listed in the <em>HOST</em> column.</p>
+</div>
+<div class="paragraph">
+<p>Alternatively, the OpenShift web console can be used to access the UI application.</p>
+</div>
+<div class="paragraph">
+<p>Navigate to <a href="https://infranode-&lt;GUID&gt;.generic.opentlc.com:8443">https://infranode-&lt;GUID&gt;.generic.opentlc.com:8443</a>, select the <em>iot-serverless</em> project and then click on the UI pod to view the expanded view:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/ocp-console-ui.png" alt="UI App Expand">
+</div>
+</div>
+<div class="paragraph">
+<p>Click on the URL provided</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/ocp-ui-overview.png" alt="UI App URL">
+</div>
+</div>
+<div class="paragraph">
+<p>The UI application will load and display the real time location of assets on the map:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/ui-overview.png" alt="UI App">
+</div>
+</div>
+<div class="paragraph">
+<p>Select an asset by clicking on its marker. The selected asset will display a larger marker (1) and its geofence (2):</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/ui-asset-selected.png" alt="Asset Inside Geofence">
+</div>
+</div>
+<div class="paragraph">
+<p>If an asset has crossed it geofence (1), a warning marker (2) will be displayed:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/ui-asset-outside-geofence.png" alt="Asset Outside Geofence">
+</div>
+</div>
+<div class="paragraph">
+<p>More information about the selected asset is also displayed at the bottom of the page:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/ui-asset-details.png" alt="Asset Info">
+</div>
+</div>
+<div class="paragraph">
+<p>Feel free to select each of the assets to learn more about the IoT devices that are being utilized in this lab.</p>
 </div>
 <div class="paragraph text-center">
-<p><span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span> <span class="image"><a class="image" href="tech_overview.html"><img src="images/icons/icon-next.png" alt="icon next" width="128"></a></span></p>
+<p><span class="image"><a class="image" href="lab_7.html"><img src="images/icons/icon-previous.png" alt="icon previous" width="128"></a></span> <span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span> <span class="image"><a class="image" href="conclusion.html"><img src="images/icons/icon-next.png" alt="icon next" width="128"></a></span></p>
+</div>
 </div>
 </div>
 </div>

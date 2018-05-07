@@ -5,8 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.7">
-<meta name="author" content="Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;">
-<title>Serverless for IoT lab</title>
+<title>Lab 6: Connecting into OpenWhisk</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -434,90 +433,276 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Serverless for IoT lab</h1>
-<div class="details">
-<span id="author" class="author">Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;</span><br>
-</div>
+<h1>Lab 6: Connecting into OpenWhisk</h1>
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_summary">Summary</h2>
+<h2 id="_trigger_limitations">Trigger Limitations</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This lab provides step by step instructions on how to use Serverless architecture for IoT. The lab uses Red Hat OpenShift Container Platform and serverless architecture to execute on-demand functions in response to IoT events. Main components of the lab include setting up Apache OpenWhisk, building functions and deploying these functions to OpenWhisk.</p>
+<p>Now that the AMQ broker is up and running within OpenShift and able to accept traffic sent by IoT assets using the MQTT protocol, how these messages are consumed by OpenWhisk so that they can be used by the actions previously becomes the next area of concern.</p>
 </div>
-<div class="sidebarblock">
+<div class="paragraph">
+<p>So far, our primary entrypoint for firing actions has been through a Trigger. However, since the MQTT transport is an eventing based protocol where messages are streamed, the use of triggers can be a limiting factor. OpenWhisk provides an alternative option that builds on top of the concept of triggers and supports streaming events onto the platform called Feeds.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_feeds">Feeds</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong><a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/feeds.md">Feeds</a></strong> are an advanced concept in OpenWhisk where users can expose an event producer service within a package. A feed is controlled by a <strong>Feed Action</strong> which handles deleting, pausing and resuming the streaming of events. Feeds can be implemented in one of three architectural patterns:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Hooks</p>
+</li>
+<li>
+<p>Polling</p>
+</li>
+<li>
+<p>Persistent Connections</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In our use case for accepting messages from the AMQ broker, the Persistent Connection feed option is the most applicable.</p>
+</div>
+<div class="paragraph">
+<p>A full overview of feeds and the architecture can be found in the <a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/feeds.md">OpenWhisk project documentation</a>.</p>
+</div>
+<div class="sect2">
+<h3 id="_feed_action">Feed Action</h3>
+<div class="paragraph">
+<p>To manage the registration of MQTT topics for which messages should be sent into the OpenWhisk platform, a feed action has been provided at in the repository at <code>iot-serverless-mqtt-feed/action/feedAction.js</code></p>
+</div>
+<div class="paragraph">
+<p>Feel free to browse the content of the action.</p>
+</div>
+<div class="paragraph">
+<p>Add the feed action to the <em>iot-serverless</em> package called <em>mqttFeed</em> using the following command executed from the root of the repository:</p>
+</div>
+<div class="listingblock">
 <div class="content">
-<div class="title">Lab Contents</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="tech_overview.html"><strong>Technology Overview</strong></a></p>
-</li>
-<li>
-<p><a href="iot_usecase.html"><strong>Business Use Case : IoT</strong></a></p>
-</li>
-<li>
-<p><a href="lab_0.html"><strong>Lab 0: Lab Environment &amp; Resources</strong></a></p>
-</li>
-<li>
-<p><a href="lab_1.html"><strong>Lab 1: Deploy OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_2.html"><strong>Lab 2: Deploy MongoDB</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html"><strong>Lab 3: Create OpenWhisk Entities</strong></a></p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="file:lab_3.html#_actions"><strong>Actions</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_organizing_resources_as_packages"><strong>Packages</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_introduction_to_triggers"><strong>Triggers</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_connecting_triggers_to_actions_using_rules"><strong>Rules</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html#_creating_a_sequence_of_actions"><strong>Sequences</strong></a></p>
-</li>
-</ul>
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash"> $ cd /home/lab-user/iot-serverless/
+ $ wsk -i action update -a feed true iot-serverless/mqttFeed iot-serverless-mqtt-feed/action/feedAction.js
+
+ ok: updated action iot-serverless/mqttFeed</code></pre>
 </div>
-</li>
-<li>
-<p><a href="lab_4.html"><strong>Lab 4: Use Geofencing &amp; Data Store</strong></a></p>
-</li>
-<li>
-<p><a href="lab_5.html"><strong>Lab 5: Deploy IoT Components</strong></a></p>
-</li>
-<li>
-<p><a href="lab_6.html"><strong>Lab 6: Connecting into OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_7.html"><strong>Lab 7: Software Sensor Application</strong></a></p>
-</li>
-<li>
-<p><a href="lab_8.html"><strong>Lab 8: Validate The End to End Flow</strong></a></p>
-</li>
-<li>
-<p><a href="lab_9.html"><strong>Lab 9: Visualizing Data</strong></a></p>
-</li>
-<li>
-<p><a href="conclusion.html"><strong>Conclusion</strong></a></p>
-</li>
-<li>
-<p><a href="advance_lab.html"><strong>Extra Labs</strong></a></p>
-</li>
-</ul>
 </div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The <code>-a</code> flag is designates that an annotation should be placed on the associated action. An annotation is a piece of metadata that can be applied to an action to provide additional information without disrupting the underlying schema. When creating a feed action, an annotation called feed with a value of true is specified so that the platform will recognize and manage the asset appropriately.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Display the contents of the iot-serverless package to confirm the feed has been registered</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash"> $ wsk -i package get iot-serverless --summary
+
+ package /whisk.system/iot-serverless
+   (parameters: none defined)
+ action /whisk.system/iot-serverless/iotServerlessSequence
+   (parameters: none defined)
+ action /whisk.system/iot-serverless/dbInsert
+   (parameters: none defined)
+ action /whisk.system/iot-serverless/geofence
+   (parameters: none defined)
+ action /whisk.system/iot-serverless/enricher
+   (parameters: none defined)
+ action /whisk.system/iot-serverless/formatInput
+   (parameters: none defined)
+ feed   /whisk.system/iot-serverless/mqttFeed
+   (parameters: none defined)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_feed_provider">Feed Provider</h3>
+<div class="paragraph">
+<p>Recall the three types of feeds that can be implemented: hooks, polling and connections. We stated that we would be utilizing the connection type of feed as it will provide a persistent connection to the AMQ broker. Since actions are short lived, another component must be added to the environment to maintain the long lived connection to AMQ. This service is known as a Feed Provider.</p>
+</div>
+<div class="paragraph">
+<p>To conform with the feed architecture within OpenWhisk, the provider will need to expose a REST API that manages the control of the feed as well as act as a proxy between AMQ and OpenWhisk.</p>
+</div>
+<div class="paragraph">
+<p>A Feed Provider implementation has been provided in the <code>iot-serverless-mqtt-feed/provider/</code> folder and is a Spring Boot based application.</p>
+</div>
+<div class="paragraph">
+<p>Templates have been created to support the building of a custom image containing the application along with the deployment to OpenShift.</p>
+</div>
+<div class="paragraph">
+<p>First, instantiate the template from the root of the project to build the image:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash"> $ cd /home/lab-user/iot-serverless/
+ $ oc process -f applier/templates/mqtt-provider-build.yml | oc apply -f-
+
+ imagestream "mqtt-provider" created
+ buildconfig "mqtt-provider" created</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A new BuildConfig and ImageStream will be created along with the triggering of the <a href="https://docs.openshift.com/container-platform/latest/using_images/s2i_images/index.html">Source-to-Image</a> based build in OpenShift.</p>
+</div>
+<div class="paragraph">
+<p>A new build should be automatically triggered. Verify the build has started by running the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash"> $  oc get builds -l application=mqtt-provider
+
+ NAME              TYPE      FROM          STATUS    STARTED          DURATION
+mqtt-provider-1   Source    Git@fa9f79c   Running   26 seconds ago</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When a build is present and running, the logs from the build execution can be seen using the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash"> $ oc logs -f builds/&lt;build_name&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When the image has been built successfully, another template can be instantiated to create the associated DeploymentConfig and Service. A set of parameters must be provided when processing the template including the credentials for access the MQTT broker and the location of the broker within the iot-serverless project.</p>
+</div>
+<div class="paragraph">
+<p>Execute the following command to instantiate the mqtt provider deployment template.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash"> $ oc -p MQ_USERNAME=iot-serverless -p MQ_PASSWORD=iot-serverless -p MQ_APPLICATION_SERVICE=broker-amq-tcp process -p MONGODB_SERVICE=mongodb -f applier/templates/mqtt-provider-deployment.yml | oc apply -f-
+
+ service "mqtt-provider" created
+ deploymentconfig "mqtt-provider" created</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Verify the mqtt-provider is active by verifying the status using the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ oc get pods -l application=mqtt-provider
+
+NAME                    READY     STATUS    RESTARTS   AGE
+mqtt-provider-1-nh5sl   1/1       Running   0          1m</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A READY column indicating 1/1 denotes the service is ready and available</p>
+</div>
+<div class="paragraph">
+<p>Finally, with the Feed action and provider deployed, the final step is to update the existing <em>iotServerlessTrigger</em> to make use of the feed action. The feed action takes in one parameter called “topic” which is the <a href="http://activemq.apache.org/selectors.html">selector pattern</a> that the provider should consider when registering itself with the broker. Triggers utilizing feeds also need to have the <code>--feed</code> flag specified. Unfortunately, this flag is only available when creating new triggers:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Delete the existing iotServerlessTrigger trigger:</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash"> $ wsk -i trigger delete iotServerlessTrigger
+
+ ok: deleted trigger iotServerlessTrigger</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now recreate the trigger to also denote the feed that should be used as the event source and the parameter with the topic pattern:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash"> $ wsk -i trigger create iotServerlessTrigger --feed iot-serverless/mqttFeed -p topic ".sf.&gt;"
+
+ok: invoked /_/iot-serverless/mqttFeed with id b7f43c780eca4686b43c780eca1686ec
+{
+    "activationId": "b7f43c780eca4686b43c780eca1686ec",
+    "annotations": [
+        {
+            "key": "path",
+            "value": "whisk.system/iot-serverless/mqttFeed"
+        },
+        {
+            "key": "waitTime",
+            "value": 45
+        },
+        {
+            "key": "kind",
+            "value": "nodejs:6"
+        },
+        {
+            "key": "limits",
+            "value": {
+                "logs": 10,
+                "memory": 256,
+                "timeout": 60000
+            }
+        },
+        {
+            "key": "initTime",
+            "value": 334
+        }
+    ],
+    "duration": 556,
+    "end": 1525646148778,
+    "logs": [],
+    "name": "mqttFeed",
+    "namespace": "whisk.system",
+    "publish": false,
+    "response": {
+        "result": {
+            "done": true
+        },
+        "status": "success",
+        "success": true
+    },
+    "start": 1525646148222,
+    "subject": "whisk.system",
+    "version": "0.0.1"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A response with <code>"success": true</code> indicates the trigger was successfully registered with the provider. This can also be confirmed by viewing the logs for the <em>mqtt-provider</em> pod by executing the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash"> $ oc logs $(oc get pods -l=application=mqtt-provider -o 'jsonpath={.items[0].metadata.name}')
+
+ 2018-05-05 18:22:29.057  INFO 1 --- [nio-8080-exec-7] c.r.i.controller.FeedProviderController  : Trigger Name: /_/iotServerlessTrigger
+ 2018-05-05 18:22:29.242  INFO 1 --- [nio-8080-exec-7] c.redhat.iot.service.TriggerDataService  : Saving Trigger</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_reenable_the_rule">Reenable the Rule</h3>
+<div class="paragraph">
+<p>A consequence of deleting the <em>iotServerlessTrigger</em> trigger in the previous section resulted in the <code>iotServerlessRule</code> becoming disabled. This occurred because the reference to the trigger was removed. Even though the trigger was recreated using a feed, the rule continues to remain disabled.</p>
+</div>
+<div class="paragraph">
+<p>Reenable the rule by executing the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash"> $ wsk -i rule enable iotServerlessRule
+
+ ok: enabled rule iotServerlessRule</code></pre>
 </div>
 </div>
 <div class="paragraph text-center">
-<p><span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span> <span class="image"><a class="image" href="tech_overview.html"><img src="images/icons/icon-next.png" alt="icon next" width="128"></a></span></p>
+<p><span class="image"><a class="image" href="lab_5.html"><img src="images/icons/icon-previous.png" alt="icon previous" width="128"></a></span> <span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span> <span class="image"><a class="image" href="lab_7.html"><img src="images/icons/icon-next.png" alt="icon next" width="128"></a></span></p>
+</div>
 </div>
 </div>
 </div>

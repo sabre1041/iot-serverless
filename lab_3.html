@@ -5,8 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.7">
-<meta name="author" content="Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;">
-<title>Serverless for IoT lab</title>
+<title>Lab 3: Create OpenWhisk Entities</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -434,90 +433,576 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Serverless for IoT lab</h1>
-<div class="details">
-<span id="author" class="author">Andrew Block &lt;ablock@redhat.com&gt;, Ishu Verma &lt;iverma@redhat.com&gt;</span><br>
-</div>
+<h1>Lab 3: Create OpenWhisk Entities</h1>
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_summary">Summary</h2>
+<h2 id="_actions"><a class="link" href="#_actions">Actions</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This lab provides step by step instructions on how to use Serverless architecture for IoT. The lab uses Red Hat OpenShift Container Platform and serverless architecture to execute on-demand functions in response to IoT events. Main components of the lab include setting up Apache OpenWhisk, building functions and deploying these functions to OpenWhisk.</p>
+<p><a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/actions.md">Actions</a> are functions that encapsulate code to be run on the OpenWhisk platform. An action can be written as a JavaScript, Swift, Python or PHP function, a Java method, any binary-compatible executable including Go programs and custom executables packaged as Docker containers.</p>
 </div>
-<div class="sidebarblock">
+<div class="paragraph">
+<p>Actions can be explicitly invoked, or run in response to an event. Each run of an action results in an activation record that is identified by a unique activation ID. The input to an action and the result of an action are a dictionary of key-value pairs, where the key is a string and the value a valid JSON value. Actions can also be composed of calls to other actions or a defined sequence of actions.
+Developing A Simple JavaScript Action</p>
+</div>
+<div class="paragraph">
+<p>To hold the custom assets that we will create during this lab, create a folder called <code>workspace</code> within the project folder and change into this directory.</p>
+</div>
+<div class="listingblock">
 <div class="content">
-<div class="title">Lab Contents</div>
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ mkdir -p /home/lab-user/iot-serverless/workspace
+$ cd /home/lab-user/iot-serverless/workspace</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>First, a simple JavaScript function will be used to illustrate how to create an invoke actions. When invoked, the action will return a “Hello World” style response.</p>
+</div>
+<div class="paragraph">
+<p>Create a file called <code>hello_openwhisk.js</code> in the workspace folder with the following content.</p>
+</div>
+<div class="listingblock">
+<div class="title">hello_openwhisk.js</div>
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-javascript" data-lang="javascript">function main() {
+    return {payload: "Welcome to IoT Serverless Lab!"};
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With the content of the function created, use the wsk tool to create an action called <em>hello_openwhisk</em></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i action update hello_openwhisk hello_openwhisk.js
+
+ok: updated action hello_openwhisk</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note: The update subcommand of action performs an upsert. If an action does not exist, one will be created. If an action does exist, it will be updated.</p>
+</div>
+<div class="paragraph">
+<p>Finally, invoke the action using the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i action invoke hello_openwhisk --result
+
+{
+    "payload": "Welcome to IoT Serverless Lab!"
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Using the <code>--result</code> flag will cause the command to wait until the function completes and print the result
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_working_with_action_parameters"><a class="link" href="#_working_with_action_parameters">Working With Action Parameters</a></h3>
+<div class="paragraph">
+<p>Actions can also accept input parameters that can be used to drive the execution. To illustrate this use case, create a new file called <code>topicReplace.js</code> that will contain an action that will replace any periods in a parameter called topic with forward slashes.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-JavaScript" data-lang="JavaScript">function main(params) {
+
+    if(params.topic) {
+      params.topic = params.topic.replace(/[.]/g,'/');
+    }
+
+    return params;
+  }</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Notice how the main method now contains a function parameter which will include any input parameters to the function.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now, create an action called <em>topicReplace</em> using the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i action update topicReplace topicReplace.js
+
+ok: updated action topicReplace</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Parameters can be passed to actions using the <code>--param</code> flag. Verify the action executes correctly by providing a parameter called topic with the content containing periods. The response returned should replace periods with slashes:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i action invoke topicReplace --result --param topic "1.2 of 8 is 4"
+
+{
+    "topic": "1/2 of 8 is 4"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Feel free to try different permutations of the parameters and their values. Note the parameters is only modified if the topic parameter is used and contains a period.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_organizing_resources_as_packages"><a class="link" href="#_organizing_resources_as_packages">Organizing Resources as Packages</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Multiple related actions can be organized together into <strong><a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/packages.md">Packages</a></strong>. Packages allow for common sets of resources, such as parameters, to be applied to multiple actions. A package can be used to centralize many of the components that will be used throughout the rest of the lab.</p>
+</div>
+<div class="paragraph">
+<p>Create a package called <em>iot-serverless</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i package create --shared yes iot-serverless
+
+ok: created package iot-serverless</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The shared flag allows the package to be visible globally
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Use the <code>package list</code> command to view the newly created package as well as the other packages included by default with the platform</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i package list</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_adding_an_action_to_the_package"><a class="link" href="#_adding_an_action_to_the_package">Adding an Action to the Package</a></h3>
+<div class="paragraph">
+<p>Previously, we created a few actions. One of which was called <em>topicReplace</em>. By default, actions are created in the default whisk.system package. The action was fairly simple and replaced the values of the topic parameter containing periods to slashes.</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="tech_overview.html"><strong>Technology Overview</strong></a></p>
+<p>Since a new package <em>iot-serverless</em> was created, delete the existing <em>topicReplace</em> action so that we can organize resources more effectively</p>
 </li>
-<li>
-<p><a href="iot_usecase.html"><strong>Business Use Case : IoT</strong></a></p>
-</li>
-<li>
-<p><a href="lab_0.html"><strong>Lab 0: Lab Environment &amp; Resources</strong></a></p>
-</li>
-<li>
-<p><a href="lab_1.html"><strong>Lab 1: Deploy OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_2.html"><strong>Lab 2: Deploy MongoDB</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html"><strong>Lab 3: Create OpenWhisk Entities</strong></a></p>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i action delete topicReplace
+
+ok: deleted action topicReplace</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Aside from the topic name, another key component of input that we are concerned about is the the current location of an asset. The IoT data in this lab provides the latitude and longitude as a single value called data separated by a space. To format both, the topic name as demonstrated earlier, and latitude and longitude values, a JavaScript function is available in a file called <code>iot-serverless-openwhisk-functions/format/formatInput.js</code></p>
+</div>
+<div class="paragraph">
+<p>From the root of the project, create an improved action using the aforementioned JavaScript file using the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ cd /home/lab-user/iot-serverless
+$ wsk -i action update iot-serverless/formatInput iot-serverless-openwhisk-functions/format/formatInput.js
+
+ok: updated action iot-serverless/formatInput</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, display the contents of the package which will show the action which was just created</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i package get iot-serverless --summary
+
+package /whisk.system/iot-serverless
+   (parameters: none defined)
+ action /whisk.system/iot-serverless/formatInput
+   (parameters: none defined)</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_introduction_to_triggers"><a class="link" href="#_introduction_to_triggers">Introduction to Triggers</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Thus far, we have explicitly invoked actions containing our business logic. In a microservices world, architectures have adopted the use of eventing or <a href="https://www.reactivemanifesto.org/">reactive</a> patterns to invoke business logic instead of proactive based approaches.</p>
+</div>
+<div class="paragraph">
+<p>In OpenWhisk, to support this architectural approach, <strong><a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/triggers_rules.md">Triggers</a></strong> represent a class of events emitted by event source e.g. location coordinates from factory assets. Triggers can be fired manually or in response to certain events.</p>
+</div>
+<div class="paragraph">
+<p>To demonstrate how triggers can be utilized, let’s go ahead and create a trigger called <em>iotServerlessTrigger</em></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i trigger create iotServerlessTrigger
+
+ok: created trigger iotServerlessTrigger</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Confirm the trigger has been created by listing the defined triggers</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i trigger list
+
+triggers
+/whisk.system/iotServerlessTrigger                                     private</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_connecting_triggers_to_actions_using_rules"><a class="link" href="#_connecting_triggers_to_actions_using_rules">Connecting Triggers to Actions Using Rules</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>While triggers maintain sourcing events within OpenWhisk, they have no effective use until they are connected with an action. This is where <strong><a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/triggers_rules.md">Rules</a></strong> comes into play. Rules associate a single trigger with a single action. When a trigger is fired, a rule will pass the invocation to the action.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/trigger-rule-action.png" alt="trigger rule action">
+</div>
+</div>
+<div class="paragraph">
+<p>To demonstrate how Rules are utilized in OpenWhisk, create a new rule that associates the <em>iotServerlessTrigger</em> trigger to the <em>formatInput</em> action within the <em>iot-serverless</em> package called <em>iotServerlessRule</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i rule update iotServerlessRule iotServerlessTrigger iot-serverless/formatInput
+
+ok: updated rule iotServerlessRule</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>N
+ow that the trigger has been connected to action by way of the rule, we can demonstrate how OpenWhisk utilizes this pattern by “firing” the trigger. Recall, the formatInput action requires two parameters be specified: topic and data.</p>
+</div>
+<div class="paragraph">
+<p>Invoke the trigger as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i trigger fire iotServerlessTrigger --param topic /sf/boiler/controller --param data "37.784237 -122.401410"
+
+ok: triggered /_/iotServerlessTrigger with id 2f195129de6e410f995129de6e210f88</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_activation_record"><a class="link" href="#_activation_record">Activation Record</a></h3>
+<div class="paragraph">
+<p>When the trigger was invoked, the referenced <em>id</em> refers to an <strong><a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/reference.md">Activation Record</a></strong> which confirms the request was accepted by OpenWhisk. When we invoked the action previously, we also passed in the <code>--result</code> flag which tells OpenWhisk to monitor the action and wait for a response to be produced. Since triggers do not produce a result as it is the Rule that performs the work of invoking the action,  we will have to investigate the activation chain to discover the result of the action.</p>
+</div>
+<div class="paragraph">
+<p>The details of the activation can be found by using the following command replacing the id from the prior command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i activation get &lt;ID&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Inside the activation response, you will notice in the <em>logs</em> property a JSON payload that illustrates the response that was returned from the invocation of the action. Inside this payload includes the <em>activationId</em> that can be used to obtain the result from the <em>formatInput</em> action as shown below.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">...
+    "logs": [
+        "{\"statusCode\":0,\"success\":true,\"activationId\":\"26fef4e532f34a41bef4e532f39a41b9\",\"rule\":\"whisk.system/iotServerlessRule\",\"action\":\"whisk.system/iot-serverless/formatInput\"}"
+    ],
+...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once again, query the activation, but this time using the activationId that is present in the logs field from the prior invocation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i activation get &lt;ID&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Inside the response field will be the result of the formatInput action similar to the following</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">    "response": {
+        "status": "success",
+        "statusCode": 0,
+        "success": true,
+        "result": {
+            "data": "37.784237 -122.401410",
+            "latitude": "37.784237",
+            "longitude": "-122.401410",
+            "topic": "/sf/boiler/controller"
+        }
+    },</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As displayed, the parameters that were provided to the trigger were sent to the <em>formatInput</em> action by way of the rule that we defined and the latitude and longitude fields were split out as expected based on the values provided in the data field.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_developing_a_node_js_action_to_enrich_input"><a class="link" href="#_developing_a_node_js_action_to_enrich_input">Developing a Node.js Action to Enrich Input</a></h3>
+<div class="paragraph">
+<p>In a prior lab, we introduced how to create simple OpenWhisk actions using JavaScript. While standalone JavaScript actions are very lightweight, they do have limitations in the functionality that they are able to provide, especially when additional libraries or dependencies are required. A popular pattern for transmitting data is to pass along a key and perform a lookup in a database to enrich content. In this section, you will configure a <a href="https://nodejs.org/en/">Node.js</a> based action to lookup content in the the MongoDB database that was previously seeded with values based on an input parameter. The values contained within the <a href="https://docs.mongodb.com/manual/core/document/">document</a> from MongoDB will be appended to the input parameters and returned as output.</p>
+</div>
+<div class="paragraph">
+<p>First, from the root of the project folder, navigate to the folder containing the source for the Node.js based action:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ cd iot-serverless-openwhisk-functions/enricher</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Within this folder, you will notice three files:</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="file:lab_3.html#_actions"><strong>Actions</strong></a></p>
+<p><code>package.json</code> - <a href="https://docs.npmjs.com/files/package.json">npm manifest file</a></p>
 </li>
 <li>
-<p><a href="file:lab_3.html#_organizing_resources_as_packages"><strong>Packages</strong></a></p>
+<p><code>enricher.js</code> - OpenWhisk action</p>
 </li>
 <li>
-<p><a href="file:lab_3.html#_introduction_to_triggers"><strong>Triggers</strong></a></p>
-</li>
-<li>
-<p><a href="file:lab_3.html#_connecting_triggers_to_actions_using_rules"><strong>Rules</strong></a></p>
-</li>
-<li>
-<p><a href="lab_3.html#_creating_a_sequence_of_actions"><strong>Sequences</strong></a></p>
+<p><code>example.env`</code> - Sample file that will be used as a base for providing environment variables for the function</p>
 </li>
 </ul>
 </div>
-</li>
-<li>
-<p><a href="lab_4.html"><strong>Lab 4: Use Geofencing &amp; Data Store</strong></a></p>
-</li>
-<li>
-<p><a href="lab_5.html"><strong>Lab 5: Deploy IoT Components</strong></a></p>
-</li>
-<li>
-<p><a href="lab_6.html"><strong>Lab 6: Connecting into OpenWhisk</strong></a></p>
-</li>
-<li>
-<p><a href="lab_7.html"><strong>Lab 7: Software Sensor Application</strong></a></p>
-</li>
-<li>
-<p><a href="lab_8.html"><strong>Lab 8: Validate The End to End Flow</strong></a></p>
-</li>
-<li>
-<p><a href="lab_9.html"><strong>Lab 9: Visualizing Data</strong></a></p>
-</li>
-<li>
-<p><a href="conclusion.html"><strong>Conclusion</strong></a></p>
-</li>
-<li>
-<p><a href="advance_lab.html"><strong>Extra Labs</strong></a></p>
-</li>
-</ul>
+<div class="paragraph">
+<p>Take a moment to explore each of these files and their contents
+One of the principles of reusable software is to externalize configurations outside of the source code. To connect to MongoDB from the function, the properties related to the location of the database and credentials must be provided. Node.js offers the functionality to externalize these values in a file called <em>.env</em> alongside the application. At runtime, the values provided will be available as environment variables for the application to leverage.</p>
+</div>
+<div class="paragraph">
+<p>A file called <code>example.env</code> has been provided with the keys that require configuration.</p>
+</div>
+<div class="paragraph">
+<p>Edit the <em>example.env</em> file to update the values based on the configuration of MongoDB</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">MONGODB_HOST=mongodb.iot-serverless.svc
+MONGODB_USER=iot-serverless
+MONGODB_PASSWORD=iot-serverless
+MONGODB_DATABASE=iotserverless</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>Rename the <code>example.env</code> file to <code>.env</code> so that the values will be available to the function</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ mv example.env .env</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Using <code>npm</code>, install all of the dependencies that are defined in the <em>package.json</em> file</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ npm install</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, package up the Node.js application</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ npm run package</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <code>npm run</code> allows for arbitrary commands or scripts to be executed to simplify user interaction. To view the command that is being executed, check out the <em>scripts</em> property within the <em>package.json</em> file
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>As a result of the execution new file called <em>enricher.zip</em> will be created in the <em>dist</em> folder. This will be the file that will be uploaded to OpenWhisk as the content used by the action.</p>
+</div>
+<div class="paragraph">
+<p>Create a new action called <em>enricher</em> by executing the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ npm run deploy
+
+&gt; iot-serverless-openwhisk-functions-enricher@1.0.0 deploy /home/lab-user/iot-serverless/iot-serverless-openwhisk-functions/enricher
+&gt; wsk -i action update iot-serverless/enricher dist/enricher.zip --kind nodejs:8
+
+ok: updated action iot-serverless/enricher</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As observed in the output from the above command, <code>wsk -i action update iot-serverless/enricher dist/enricher.zip --kind nodejs:8</code> was executed. The <code>--kind</code> flag informs OpenWhisk the framework to utilize.</p>
+</div>
+<div class="paragraph">
+<p>With the action created, let’s test it out.</p>
+</div>
+<div class="paragraph">
+<p>The MongoDB has a <em>collection</em> called <em>assets</em> which was populated with data in an earlier lab. Inside this collection, a column called <em>topic</em> specifies the name of the topic associated with the particular asset (more on that later). The enricher function will accept a parameter called <em>topic</em> and perform a lookup on the collection for any document matching the value and return the contents of the document.</p>
+</div>
+<div class="paragraph">
+<p>Once again, view the contents of the assets table by executing the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ oc rsh $(oc get pods -l=deploymentconfig=mongodb -o 'jsonpath={.items[0].metadata.name}') bash -c "mongo 127.0.0.1:27017/\${MONGODB_DATABASE} -u \${MONGODB_USER} -p \${MONGODB_PASSWORD} --eval='db.assets.find()'"
+
+MongoDB shell version: 3.2.10
+connecting to: 127.0.0.1:27017/iotserverless
+{ "_id" : ObjectId("5aef3736e91e408be1f42bac"), "name" : "Chemical Pump LX-222", "location" : "Boiler room", "topic" : "/sf/boiler/pump-lx222", "center_latitude" : "37.784202", "center_longitude" : "-122.401858", "geofence_radius" : "3.0", "picture" : "Chemical-Pump.jpg" }
+{ "_id" : ObjectId("5aef3736e91e408be1f42bad"), "name" : "Blow down separator valve VL-1", "location" : "Boiler room", "topic" : "/sf/boiler/separator-vl-1", "center_latitude" : "37.784215", "center_longitude" : "-122.401632", "geofence_radius" : "1.0", "picture" : "Blowdown-Valve.jpg" }
+{ "_id" : ObjectId("5aef3736e91e408be1f42bae"), "name" : "Surface blow down controller", "location" : "Boiler room", "topic" : "/sf/boiler/controller", "center_latitude" : "37.784237", "center_longitude" : "-122.401410", "geofence_radius" : "1.0", "picture" : "Blowdown-Controller.jpg" }
+{ "_id" : ObjectId("5aef3736e91e408be1f42baf"), "name" : "Condensate duplex pump", "location" : "Boiler room", "topic" : "/sf/boiler/cond-pump", "center_latitude" : "37.784269", "center_longitude" : "-122.401302", "geofence_radius" : "3.0", "picture" : "Condensate-Pump.jpg" }
+{ "_id" : ObjectId("5aef3736e91e408be1f42bb0"), "name" : "Robotic arm joint RT-011", "location" : "Assembly section", "topic" : "/sf/assembly/robotic-joint", "center_latitude" : "37.784115", "center_longitude" : "-122.401380", "geofence_radius" : "1.0", "picture" : "Robotic-Arm.jpg" }
+{ "_id" : ObjectId("5aef3736e91e408be1f42bb1"), "name" : "Teledyne DALSA Camera", "location" : "Assembly section", "topic" : "/sf/assembly/camera", "center_latitude" : "37.784312", "center_longitude" : "-122.401241", "geofence_radius" : "1.0", "picture" : "Teledyne-Dalsa.jpg" }
+{ "_id" : ObjectId("5aef3736e91e408be1f42bb2"), "name" : "Lighting control unit RT-SD-1000", "location" : "Warehouse", "topic" : "/sf/warehouse/lighting-control", "center_latitude" : "37.784335", "center_longitude" : "-122.401159", "geofence_radius" : "4.0", "picture" : "Lighting-Control.JPG" }
+{ "_id" : ObjectId("5aef3736e91e408be1f42bb3"), "name" : "DIN Rail power supply 240-24", "location" : "Warehouse", "topic" : "/sf/warehouse/power-supply", "center_latitude" : "37.784393", "center_longitude" : "-122.401399", "geofence_radius" : "1.0", "picture" : "DIN-Rail.jpg" }</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The prior command utilized several OpenShift features to reduce the number of steps needed to returned the desired results. In particular, OpenShift label filtering was used to limit the results along with output parsing using <a href="https://kubernetes.io/docs/reference/kubectl/jsonpath/">jsonpath</a> to extract the name of the pod returned from the filtered list
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Select one of the topic values returned and invoke the enricher function (for example, ‘/sf/boiler/pump-lx222’)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i action invoke iot-serverless/enricher --param topic /sf/boiler/pump-lx222 --result
+
+{
+    "center_latitude": "37.784202",
+    "center_longitude": "-122.401858",
+    "geofence_radius": "3.0",
+    "location": "Boiler room",
+    "name": "Chemical Pump LX-222",
+    "picture": "Chemical-Pump.jpg",
+    "topic": "/sf/boiler/pump-lx222"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice how the content of the document has been returned. Feel free to use another topic name from the database results to fully test out the functionality of the action. Be sure to also use a topic value that is not in the collection as only the input value will be returned.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_creating_a_sequence_of_actions"><a class="link" href="#_creating_a_sequence_of_actions">Creating a Sequence of Actions</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Thus far, we have created two functions, one that will perform input formatting, and another that will execute a lookup from the database based on provided values. Whether you have noticed or not, several of the parameter names have been identical (such as <em>topic</em>). This is no coincidence. OpenWhisk provides the capability chaining multiple actions together where the output from one action is the input for another action. This functionality is known as a <strong>Sequence</strong>. Sequences are entirely separate actions and define the order in which actions are executed.</p>
+</div>
+<div class="paragraph">
+<p>Create a new sequence action called <em>iotServerlessSequence</em> in the <em>iot-serverless</em> package that will first call <em>formatInput</em> action first and then use the output as the input parameters for the <em>enricher</em> action.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i action update iot-serverless/iotServerlessSequence --sequence iot-serverless/formatInput,iot-serverless/enricher
+
+ok: updated action iot-serverless/iotServerlessSequence</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With a new method for initiating the action to format the input using a sequence, update the <em>iotServerlessRule</em> to invoke the <em>iotServerlessSequence</em> sequence action instead of directly calling the <em>formatInput</em> action:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i rule update iotServerlessRule iotServerlessTrigger iot-serverless/iotServerlessSequence
+
+ok: updated rule iotServerlessRule</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Fire the trigger using the same parameters as before</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk -i trigger fire iotServerlessTrigger --param topic /sf/boiler/controller --param data "37.784237 -122.401410"
+
+ok: triggered /_/iotServerlessTrigger with id 33d809d6923c456a9809d6923c156ad5</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once again the id of the activation of the trigger will be returned. Using the steps from the Activations section, locate the activationId within the trigger activation to determine the output from the execution of the sequence action. A value similar to the following indicates the sequence action processed successfully.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">    "response": {
+        "status": "success",
+        "statusCode": 0,
+        "success": true,
+        "result": {
+            "center_latitude": "37.784237",
+            "center_longitude": "-122.401410",
+            "data": "37.784237 -122.401410",
+            "geofence_radius": "1.0",
+            "latitude": "37.784237",
+            "location": "Boiler room",
+            "longitude": "-122.401410",
+            "name": "Surface blow down controller",
+            "picture": "Blowdown-Controller.jpg",
+            "topic": "/sf/boiler/controller"
+        }
+    },
+    "logs": [
+        "05233e250a0d4276a33e250a0db27622",
+        "85f6c5a268cf45dcb6c5a268cf35dc2c"
+    ],</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice how latitude and longitude have been split out into separate fields as per the logic of the <em>formatInput</em> action along with values returned from MongoDB as provided by <em>enricher</em> action.
+In addition, there is a field called <em>logs</em> containing two values. Those are the activation ID’s from the execution of each action in the sequence action. Feel free to view the execution of those actions as well.</p>
 </div>
 <div class="paragraph text-center">
-<p><span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span> <span class="image"><a class="image" href="tech_overview.html"><img src="images/icons/icon-next.png" alt="icon next" width="128"></a></span></p>
+<p><span class="image"><a class="image" href="lab_2.html"><img src="images/icons/icon-previous.png" alt="icon previous" width="128"></a></span> <span class="image"><a class="image" href="lab_content.html"><img src="images/icons/icon-home.png" alt="icon home" width="128"></a></span> <span class="image"><a class="image" href="lab_4.html"><img src="images/icons/icon-next.png" alt="icon next" width="128"></a></span></p>
 </div>
 </div>
 </div>
