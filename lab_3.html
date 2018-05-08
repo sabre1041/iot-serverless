@@ -440,7 +440,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_actions"><a class="link" href="#_actions">Actions</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/actions.md">Actions</a> are functions that encapsulate code to be run on the OpenWhisk platform. An action can be written as a JavaScript, Swift, Python or PHP function, a Java method, any binary-compatible executable including Go programs and custom executables packaged as Docker containers.</p>
+<p><a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/actions.md">Actions</a> are stateless functions that encapsulate code to be run on the OpenWhisk platform. An action can be written as a JavaScript, Swift, Python or PHP function, a Java method, any binary-compatible executable including Go programs and custom executables packaged as Docker containers.</p>
 </div>
 <div class="paragraph">
 <p>Actions can be explicitly invoked, or run in response to an event. Each run of an action results in an activation record that is identified by a unique activation ID. The input to an action and the result of an action are a dictionary of key-value pairs, where the key is a string and the value a valid JSON value. Actions can also be composed of calls to other actions or a defined sequence of actions.
