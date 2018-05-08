@@ -623,8 +623,7 @@ $ wsk property set --auth $AUTH_SECRET --apihost $(oc get route/openwhisk --temp
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ wsk property set --auth $AUTH_SECRET --apihost $(oc get route/openwhisk --template="{{.spec.host}}")
-ok: whisk auth set. Run 'wsk property get --auth' to see the new value.
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">ok: whisk auth set. Run 'wsk property get --auth' to see the new value.
 ok: whisk API host set to openwhisk-openwhisk.apps-&lt;GUID&gt;.generic.opentlc.com</code></pre>
 </div>
 </div>
@@ -635,7 +634,7 @@ ok: whisk API host set to openwhisk-openwhisk.apps-&lt;GUID&gt;.generic.opentlc.
 <i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-Use the -i option with wsk to avoid the validation error triggered by the self-signed cert in the nginx service.
+Use the <code>-i</code> option with wsk to avoid the validation error triggered by the self-signed cert in the nginx service.
 </td>
 </tr>
 </table>
@@ -666,7 +665,7 @@ Use the -i option with wsk to avoid the validation error triggered by the self-s
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-06 21:53:23 MST
+Last updated 2018-05-07 23:04:50 PDT
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">

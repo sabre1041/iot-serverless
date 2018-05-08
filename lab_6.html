@@ -604,12 +604,10 @@ mqtt-provider-1-nh5sl   1/1       Running   0          1m</code></pre>
 <p>A READY column indicating 1/1 denotes the service is ready and available</p>
 </div>
 <div class="paragraph">
-<p>Finally, with the Feed action and provider deployed, the final step is to update the existing <em>iotServerlessTrigger</em> to make use of the feed action. The feed action takes in one parameter called “topic” which is the <a href="http://activemq.apache.org/selectors.html">selector pattern</a> that the provider should consider when registering itself with the broker. Triggers utilizing feeds also need to have the <code>--feed</code> flag specified. Unfortunately, this flag is only available when creating new triggers:</p>
+<p>Finally, with the Feed action and provider deployed, the final step is to update the existing <em>iotServerlessTrigger</em> to make use of the feed action. The feed action takes in one parameter called “topic” which is the <a href="http://activemq.apache.org/selectors.html">selector pattern</a> that the provider should consider when registering itself with the broker. Triggers utilizing feeds also need to have the <code>--feed</code> flag specified. Unfortunately, this flag is only available when creating new triggers.</p>
 </div>
-<div class="literalblock">
-<div class="content">
-<pre>Delete the existing iotServerlessTrigger trigger:</pre>
-</div>
+<div class="paragraph">
+<p>Delete the existing iotServerlessTrigger trigger:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -709,7 +707,7 @@ ok: invoked /_/iot-serverless/mqttFeed with id b7f43c780eca4686b43c780eca1686ec
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-06 21:53:23 MST
+Last updated 2018-05-07 23:04:50 PDT
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
