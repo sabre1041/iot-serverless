@@ -456,6 +456,34 @@ You can add applications to this project with the 'new-app' command. For example
     oc new-app centos/ruby-22-centos7~https://github.com/openshift/ruby-ex.git</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>The iot-serverless project has been created and will be used for the remainder of the lab.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>In the lab environment, OpenShift&#8217;s <a href="https://docs.openshift.com/container-platform/3.9/architecture/networking/sdn.html">Software Defined Network</a> is configured using <code>ovs-subnet</code> which means from a networking perspective, traffic can communicate between projects freely. As the lab progresses, there will need to be communication between the <em>iot-serverless</em> and <em>openwhisk</em> projects.</p>
+</div>
+<div class="paragraph">
+<p>In other OpenShift environments using an alternate SDN, such as the <code>ovs-multitenant</code> plugin, the networks will need to be joined in order for proper communication to occur.</p>
+</div>
+<div class="paragraph">
+<p>Execute the following command to join the two networks:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ oc adm pod-network join-projects --to=openwhisk iot-serverless</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="sect2">
 <h3 id="_deploying_and_populating_mongodb">Deploying and Populating MongoDB</h3>
 <div class="paragraph">
@@ -611,7 +639,7 @@ Questions? Try the support group
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-07 23:04:44 PDT
+Last updated 2018-05-08 11:15:30 PDT
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
