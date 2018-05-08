@@ -126,9 +126,9 @@ mqtt-provider-1-nh5sl   1/1       Running   0          1m
 
 A READY column indicating 1/1 denotes the service is ready and available
 
-Finally, with the Feed action and provider deployed, the final step is to update the existing _iotServerlessTrigger_ to make use of the feed action. The feed action takes in one parameter called “topic” which is the link:http://activemq.apache.org/selectors.html[selector pattern] that the provider should consider when registering itself with the broker. Triggers utilizing feeds also need to have the `--feed` flag specified. Unfortunately, this flag is only available when creating new triggers:
+Finally, with the Feed action and provider deployed, the final step is to update the existing _iotServerlessTrigger_ to make use of the feed action. The feed action takes in one parameter called “topic” which is the link:http://activemq.apache.org/selectors.html[selector pattern] that the provider should consider when registering itself with the broker. Triggers utilizing feeds also need to have the `--feed` flag specified. Unfortunately, this flag is only available when creating new triggers.
 
- Delete the existing iotServerlessTrigger trigger:
+Delete the existing iotServerlessTrigger trigger:
 
 [source,bash]
 ----

@@ -106,12 +106,11 @@ Successful configuration of wsk will show following output:
 
 [source,bash]
 ----
-$ wsk property set --auth $AUTH_SECRET --apihost $(oc get route/openwhisk --template="{{.spec.host}}")
 ok: whisk auth set. Run 'wsk property get --auth' to see the new value.
 ok: whisk API host set to openwhisk-openwhisk.apps-<GUID>.generic.opentlc.com
 ----
 
-IMPORTANT: Use the -i option with wsk to avoid the validation error triggered by the self-signed cert in the nginx service.
+IMPORTANT: Use the `-i` option with wsk to avoid the validation error triggered by the self-signed cert in the nginx service.
 
 === Validate OpenWhisk CLI configuration
 

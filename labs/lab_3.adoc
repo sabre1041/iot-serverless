@@ -7,7 +7,7 @@
 
 == Actions
 
-link:https://github.com/apache/incubator-openwhisk/blob/master/docs/actions.md[Actions] are functions that encapsulate code to be run on the OpenWhisk platform. An action can be written as a JavaScript, Swift, Python or PHP function, a Java method, any binary-compatible executable including Go programs and custom executables packaged as Docker containers.
+link:https://github.com/apache/incubator-openwhisk/blob/master/docs/actions.md[Actions] are stateless functions that encapsulate code to be run on the OpenWhisk platform. An action can be written as a JavaScript, Swift, Python or PHP function, a Java method, any binary-compatible executable including Go programs and custom executables packaged as Docker containers.
 
 Actions can be explicitly invoked, or run in response to an event. Each run of an action results in an activation record that is identified by a unique activation ID. The input to an action and the result of an action are a dictionary of key-value pairs, where the key is a string and the value a valid JSON value. Actions can also be composed of calls to other actions or a defined sequence of actions.
 Developing A Simple JavaScript Action
@@ -41,7 +41,7 @@ $ wsk -i action update hello_openwhisk hello_openwhisk.js
 ok: updated action hello_openwhisk
 ----
 
-Note: The update subcommand of action performs an upsert. If an action does not exist, one will be created. If an action does exist, it will be updated.
+NOTE: The update subcommand of action performs an upsert. If an action does not exist, one will be created. If an action does exist, it will be updated.
 
 Finally, invoke the action using the following command:
 
@@ -272,7 +272,7 @@ Within this folder, you will notice three files:
 * `example.env`` - Sample file that will be used as a base for providing environment variables for the function
 
 Take a moment to explore each of these files and their contents
-One of the principles of reusable software is to externalize configurations outside of the source code. To connect to MongoDB from the function, the properties related to the location of the database and credentials must be provided. Node.js offers the functionality to externalize these values in a file called _.env_ alongside the application. At runtime, the values provided will be available as environment variables for the application to leverage. 
+One of the principles of reusable software is to externalize configurations outside of the source code. To connect to MongoDB from the function, the properties related to the location of the database and credentials must be provided. Node.js offers the functionality to externalize these values in a file called _.env_ alongside the application. At runtime, the values provided will be available as environment variables for the application to leverage.
 
 A file called `example.env` has been provided with the keys that require configuration.
 
