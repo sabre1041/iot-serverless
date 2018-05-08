@@ -21,6 +21,22 @@ You can add applications to this project with the 'new-app' command. For example
     oc new-app centos/ruby-22-centos7~https://github.com/openshift/ruby-ex.git
 ----
 
+The iot-serverless project has been created and will be used for the remainder of the lab.
+
+[NOTE]
+====
+In the lab environment, OpenShift's link:https://docs.openshift.com/container-platform/3.9/architecture/networking/sdn.html[Software Defined Network] is configured using `ovs-subnet` which means from a networking perspective, traffic can communicate between projects freely. As the lab progresses, there will need to be communication between the _iot-serverless_ and _openwhisk_ projects.
+
+In other OpenShift environments using an alternate SDN, such as the `ovs-multitenant` plugin, the networks will need to be joined in order for proper communication to occur.
+
+Execute the following command to join the two networks:
+
+[source,bash]
+----
+$ oc adm pod-network join-projects --to=openwhisk iot-serverless
+----
+====
+
 === Deploying and Populating MongoDB
 
 link:https://www.mongodb.com/[MongoDB] is a popular non relational database (NoSQL). As asset readings are received, their values are stored for for retrieval afterward.
