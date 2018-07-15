@@ -107,7 +107,7 @@ More information about the selected asset is also displayed at the bottom of the
 
 image::ui-asset-details.png[Asset Info]
 
-Feel free to select each of the assets to learn more about the IoT devices that are being utilized in this lab.
+Feel free to select each of the assets to learn more about the IoT equipment being monitored in this lab.
 
 [.text-center]
 image:icons/icon-previous.png[align=left, width=128, link=lab_7.html] image:icons/icon-home.png[align="center",width=128, link=lab_content.html] image:icons/icon-next.png[align="right"width=128, link=conclusion.html]

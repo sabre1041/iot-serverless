@@ -25,9 +25,7 @@ The iot-serverless project has been created and will be used for the remainder o
 
 [NOTE]
 ====
-In the lab environment, OpenShift's link:https://docs.openshift.com/container-platform/3.9/architecture/networking/sdn.html[Software Defined Network] is configured using `ovs-subnet` which means from a networking perspective, traffic can communicate between projects freely. As the lab progresses, there will need to be communication between the _iot-serverless_ and _openwhisk_ projects.
-
-In other OpenShift environments using an alternate SDN, such as the `ovs-multitenant` plugin, the networks will need to be joined in order for proper communication to occur.
+In OpenShift environments using an alternate SDN, such as the `ovs-multitenant` plugin, the networks will need to be joined in order for proper communication to occur.
 
 Execute the following command to join the two networks:
 
@@ -39,11 +37,11 @@ $ oc adm pod-network join-projects --to=openwhisk iot-serverless
 
 === Deploying and Populating MongoDB
 
-link:https://www.mongodb.com/[MongoDB] is a popular non relational database (NoSQL). As asset readings are received, their values are stored for for retrieval afterward.
+link:https://www.mongodb.com/[MongoDB] is a popular non relational database (NoSQL). As asset location data is received, it is stored in MongoDB for retrieval afterward.
 
 OpenShift provides support for MongoDB and includes templates to streamline the deployment.
 
-Execute the following command to instantiate the template which will create a new user and set the password to _iot-serverless_ along with a database also called _iotserverless_.
+Execute the following command to instantiate the template which will create a new user and set the password to _iot-serverless_ along with a database called _iotserverless_.
 
 [source,bash]
 ----
@@ -69,12 +67,12 @@ mongodb-1-x75j8   1/1       Running   0          3m
 
 A READY column indicating 1/1 denotes the service is ready and available
 
-To provide additional information about each of the assets along with supporting later portions of the lab, a MongoDB link:https://docs.mongodb.com/manual/core/databases-and-collections/#collections[collection] needs to be populated containing these resources. To properly seed the database, an link:https://docs.openshift.com/container-platform/latest/dev_guide/jobs.html[OpenShift job] can be used. A job is an OpenShift pod that runs to completion, unlike a ReplicationController which will ensure a set number of replicas are constantly running.
+To support later portions of the lab, additional information about each asset needs be added. A MongoDB link:https://docs.mongodb.com/manual/core/databases-and-collections/#collections[collection] needs to be populated containing this additional information. To properly seed the database, an link:https://docs.openshift.com/container-platform/latest/dev_guide/jobs.html[OpenShift job] can be used. A job is an OpenShift pod that runs to completion, unlike a ReplicationController which ensures a set number of replicas are constantly running.
 
 A template is available to seed the database and contains the following resources:
 
 * A ConfigMap containing the values to be added to a newly created collection
-* A job that will execute the link:mongoinport[https://docs.mongodb.com/manual/reference/program/mongoimport/] command to import the values contained in the ConfigMap
+* A job to execute the link:https://docs.mongodb.com/manual/reference/program/mongoimport/[mongoinport] command to import the values contained in the ConfigMap
 
 From the root of the project, execute the following command:
 
@@ -131,7 +129,7 @@ Questions? Try the support group
 >
 ----
 
-The mongoimport command created a new collection called _assets_. +
+Previously, we'd used the mongoimport command to create a new collection called _assets_. +
 
 Verify the contents of the collection by executing the following command:
 

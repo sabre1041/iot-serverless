@@ -83,7 +83,7 @@ ok: updated action iot-serverless/iotServerlessSequence
 
 === Verifying the Geofence Action
 
-Lets see how to use this in a real life scenario of a factory that wants to monitor an asset called "DIN Rail power supply". This asset is expected to be located at (37.784393, -122.401399) and can move only within an assigned area (3m). This radius is within the spare inventory section in the warehouse. If this asset moves outside this assigned area (geofence), then an alert will be triggered. Let’s say the asset now reports its current location as (37.784420, -122.401399) which is outside its geofence then the action sequence should set a value of `alert: 1` in the payload.
+Lets see how we can use this in a real life scenario where a factory wants to monitor an asset called "DIN Rail power supply". This asset is expected to be located at (37.784393, -122.401399) and can move only within an assigned area called spare inventory section(3m). This radius of spare inventory section is 3m. If this asset moves outside its assigned area (geofence), then an alert will be triggered. Let’s say the asset now reports its current location as (37.784420, -122.401399) which is outside its geofence then the action sequence should set a value of `alert: 1` in the payload.
 
 Test this scenario with the sequence we created above by directly invoking the sequence action:
 
@@ -108,6 +108,7 @@ $ wsk -i action invoke iot-serverless/iotServerlessSequence --param topic /sf/wa
 
 Notice how `"alert": 1` was part of the returned payload. This indicates that the geofence action calculated that the asset was outside of the permitted area. If the asset was within the geofenced region, then a value of `"alert": 0` would have been returned.
 
+Feel free to try different values of coordinates to test if the asset is still within its geofence.
 
 == Inserting Records into the Database
 

@@ -94,6 +94,16 @@ image::openwhisk-deployment-ui.png[]
 
 `wsk` is the CLI to interact with OpenWhisk services which has already been downloaded on this system.  The `wsk` CLI needs to be to be configured to be able to interact with OpenWhisk deployment.
 
+=== Install wsk
+Download wsk binary, unpack it and place it in your PATH
+
+[source,bash]
+----
+$ wget https://github.com/projectodd/openwhisk-openshift/releases/tag/latest/ OpenWhisk_CLI-latest-linux-amd64.tgz
+$ tar -xvzf OpenWhisk_CLI-latest-linux-amd64.tgz
+$  mv wsk /usr/local/bin/.
+----
+
 * Use the following commands to configure wsk:
 
 [source,bash]

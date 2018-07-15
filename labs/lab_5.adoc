@@ -6,7 +6,7 @@
 
 == IoT Data Transports
 
-Due to its unique requirements (less compute capable devices, low power use, small message payload and large number of devices), IoT data transport protocols needs are different than other use cases, say, mobile, client/server or embedded. Some of the commonly used data transport protocols for IoT are MQTT, CoAP, LWM2M and AMQP. For this lab, MQTT is being used as the data transport for assets sending location data to message broker.
+Due to its unique requirements (less compute capable devices, low power use, small message payload and large number of devices), IoT data transport needs are different than other use cases, say, mobile or client/server. Some of the commonly used data transport protocols for IoT are MQTT, CoAP, LWM2M and AMQP. For this lab, MQTT is being used as the data transport for assets sending location data to message broker.
 
 === Deploying AMQ
 

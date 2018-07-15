@@ -4,10 +4,10 @@
 
 = Conclusion
 
-This lab provides hands-on experience with Serverless Architecture, FaaS, Apache OpenWhisk, OpenShift and how IoT use case like Smart Asset Management can use these technologies.
-Working through the various exercises in this lab, you learned about how to:
+This lab provided hands-on experience with Serverless Architecture, FaaS, Apache OpenWhisk, OpenShift for IoT use case Smart Asset Management.
+Through the various exercises in this lab, you learned about how to:
 
-* Deploy Apache OpenWhisk and learning how to interact with it using CLI
+* Deploy Apache OpenWhisk and interact with it using CLI
 * Deploy MongoDB and seeding it with documents
 * Creating OpenWhisk Actions in JavaScript and Node.js
 * Creating Trigger, Package and Rules

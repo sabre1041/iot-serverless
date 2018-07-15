@@ -5,9 +5,9 @@
 = Lab 6: Connecting into OpenWhisk
 
 == Trigger Limitations
-Now that the AMQ broker is up and running within OpenShift and able to accept traffic sent by IoT assets using the MQTT protocol, how these messages are consumed by OpenWhisk so that they can be used by the actions previously becomes the next area of concern.
+Now that the AMQ broker is up and running within OpenShift and able to accept traffic sent by IoT assets using the MQTT protocol, lets see how these messages are consumed by OpenWhisk so that they can be used by the actions created previously.
 
-So far, our primary entrypoint for firing actions has been through a Trigger. However, since the MQTT transport is an eventing based protocol where messages are streamed, the use of triggers can be a limiting factor. OpenWhisk provides an alternative option that builds on top of the concept of triggers and supports streaming events onto the platform called Feeds.
+So far, our primary entrypoint for firing actions has been through a Trigger. However, since the MQTT transport is an eventing based protocol where messages are streamed, the use of triggers can be a limiting factor. OpenWhisk provides an alternative option called Feeds that builds on top of the concept of triggers and supports streaming events into the platform.
 
 == Feeds
 

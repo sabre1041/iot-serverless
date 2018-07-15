@@ -9,8 +9,9 @@
 
 link:https://github.com/apache/incubator-openwhisk/blob/master/docs/actions.md[Actions] are stateless functions that encapsulate code to be run on the OpenWhisk platform. An action can be written as a JavaScript, Swift, Python or PHP function, a Java method, any binary-compatible executable including Go programs and custom executables packaged as Docker containers.
 
-Actions can be explicitly invoked, or run in response to an event. Each run of an action results in an activation record that is identified by a unique activation ID. The input to an action and the result of an action are a dictionary of key-value pairs, where the key is a string and the value a valid JSON value. Actions can also be composed of calls to other actions or a defined sequence of actions.
-Developing A Simple JavaScript Action
+Actions can be explicitly invoked, or run in response to an event. Each run of an action results in an activation record that is identified by a unique activation ID. The input to an action and the result of an action is a dictionary of key-value pairs, where the key is a string and the value a valid JSON value. Actions can also be composed of calls to other actions or a defined sequence of actions.
+
+=== Developing A Simple JavaScript Action
 
 To hold the custom assets that we will create during this lab, create a folder called `workspace` within the project folder and change into this directory.
 
@@ -194,8 +195,7 @@ $ wsk -i rule update iotServerlessRule iotServerlessTrigger iot-serverless/forma
 
 ok: updated rule iotServerlessRule
 ----
-N
-ow that the trigger has been connected to action by way of the rule, we can demonstrate how OpenWhisk utilizes this pattern by “firing” the trigger. Recall, the formatInput action requires two parameters be specified: topic and data.
+Now that the trigger has been connected to action by way of the rule, we can demonstrate how OpenWhisk utilizes this pattern by “firing” the trigger. Recall, the formatInput action requires two parameters be specified: topic and data.
 
 Invoke the trigger as shown below:
 
@@ -256,7 +256,7 @@ As displayed, the parameters that were provided to the trigger were sent to the 
 
 === Developing a Node.js Action to Enrich Input
 
-In a prior lab, we introduced how to create simple OpenWhisk actions using JavaScript. While standalone JavaScript actions are very lightweight, they do have limitations in the functionality that they are able to provide, especially when additional libraries or dependencies are required. A popular pattern for transmitting data is to pass along a key and perform a lookup in a database to enrich content. In this section, you will configure a link:https://nodejs.org/en/[Node.js] based action to lookup content in the the MongoDB database that was previously seeded with values based on an input parameter. The values contained within the link:https://docs.mongodb.com/manual/core/document/[document] from MongoDB will be appended to the input parameters and returned as output.
+In a previous section, we introduced how to create simple OpenWhisk actions using JavaScript. While standalone JavaScript actions are very lightweight, they do have limitations in the functionality that they are able to provide, especially when additional libraries or dependencies are required. A popular pattern for transmitting data is to pass along a key and perform a lookup in a database to enrich content. In this section, you will configure a link:https://nodejs.org/en/[Node.js] based action to lookup content in the the MongoDB database that was previously seeded, with values based on an input parameter. The values contained within the link:https://docs.mongodb.com/manual/core/document/[document] from MongoDB will be appended to the input parameters and returned as output.
 
 First, from the root of the project folder, navigate to the folder containing the source for the Node.js based action:
 
@@ -271,7 +271,7 @@ Within this folder, you will notice three files:
 * `enricher.js` - OpenWhisk action
 * `example.env`` - Sample file that will be used as a base for providing environment variables for the function
 
-Take a moment to explore each of these files and their contents
+Take a moment to explore each of these files and their contents.
 One of the principles of reusable software is to externalize configurations outside of the source code. To connect to MongoDB from the function, the properties related to the location of the database and credentials must be provided. Node.js offers the functionality to externalize these values in a file called _.env_ alongside the application. At runtime, the values provided will be available as environment variables for the application to leverage.
 
 A file called `example.env` has been provided with the keys that require configuration.
@@ -348,7 +348,7 @@ connecting to: 127.0.0.1:27017/iotserverless
 
 ----
 
-NOTE: The prior command utilized several OpenShift features to reduce the number of steps needed to returned the desired results. In particular, OpenShift label filtering was used to limit the results along with output parsing using link:https://kubernetes.io/docs/reference/kubectl/jsonpath/[jsonpath] to extract the name of the pod returned from the filtered list
+NOTE: The prior command utilized several OpenShift features to reduce the number of steps needed to return the desired results. In particular, OpenShift label filtering was used to limit the results along with output parsing using link:https://kubernetes.io/docs/reference/kubectl/jsonpath/[jsonpath] to extract the name of the pod returned from the filtered list
 
 
 Select one of the topic values returned and invoke the enricher function (for example, ‘/sf/boiler/pump-lx222’)
@@ -372,7 +372,7 @@ Notice how the content of the document has been returned. Feel free to use anoth
 
 == Creating a Sequence of Actions
 
-Thus far, we have created two functions, one that will perform input formatting, and another that will execute a lookup from the database based on provided values. Whether you have noticed or not, several of the parameter names have been identical (such as _topic_). This is no coincidence. OpenWhisk provides the capability chaining multiple actions together where the output from one action is the input for another action. This functionality is known as a **Sequence**. Sequences are entirely separate actions and define the order in which actions are executed.
+Thus far, we have created two functions, one that will perform input formatting, and another that will execute a lookup from the database based on provided values. You may have noticed that several of the parameter names have been identical (such as _topic_). This is no coincidence. OpenWhisk provides the capability of chaining multiple actions together where the output from one action is the input for another action. This functionality is known as a **Sequence**. Sequences are entirely separate actions and define the order in which actions are executed.
 
 Create a new sequence action called _iotServerlessSequence_ in the _iot-serverless_ package that will first call _formatInput_ action first and then use the output as the input parameters for the _enricher_ action.
 

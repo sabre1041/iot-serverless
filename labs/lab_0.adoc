@@ -4,59 +4,34 @@
 
 = Lab 0: Lab Environment & Resources
 
-== Lab Environment
-This lab utilizes an environment that has already been provisioned using Red Hat CloudForms to deploy infrastructure needed our lab on Ravello. It is deployed as a runtime application consisting of 5 VMs as well as the overall network configuration. Red Hat OpenShift Container Platform 3.9 has already been deployed for us.
+== Setup Lab Environment
+This lab utilizes Red Hat OpenShift Container Platform which can be provisioned on-premise or on public cloud, on Open Stack platform, in a VM or natively on operating system, on a multi-cluster system or laptop (using Minishift). Installing OpenShift is outside the scope of this lab.
 
-OpenShift environment for this lab consists of the following systems:
+== Pre-reqs
 
-[cols="3",options="header"]
-|=======
-|Hostname              |Internal IP    |Description
-|`bastion.example.com` |`192.168.0.5`  | Bastion host
-|`master.example.com`  |`192.168.0.10` | Master
-|`node01.example.com`  |`192.168.0.11` | Node 01
-|`node02.example.com`  |`192.168.0.12` | Node 02
-|`node03.example.com`  |`192.168.0.13` | Node 03
-|=======
+=== Persistent Storage
+In order for IoT data to persist across ephemeral containers, persistent storage needs to be configured for OpenShift. Depending on how OpenShift is provisioned, an appropriate method can be used setup persistent storage.
 
+For this lab, 10 persistent volumes (PV) will be needed (half with 10GB and other half with 5GB). Make sure for each PV the access modes are set to ReadWriteOnce and ReadWriteMany
+Change the access permissions and ownership of the persistent volumes so the user can Read/Write/Execute these volumes.
 
-== Get GUID
-
-Open a web browser and navigate to: link:https://www.opentlc.com/guidgrabber/guidgrabber.cgi[https://www.opentlc.com/guidgrabber/guidgrabber.cgi]
+=== Install required packages
+- nodejs
+- wget
+- git
+- zip
+- oc
 
 
-Select and fill in the following values:
+== Access Lab environment with OpenShift CLI
 
-Lab code: *L1122 - Develop IoT solutions with containers and serverless patterns* +
-Activation key: *iot*
+OpenShift features a Command Line Interface for interacting with the Platform.
 
-image::guid-grabber.png[Request GUID]
-
-== Access Lab environment
-
-Interaction with the environment will be facilitated using several mechanisms listed below:
-
-=== SSH
-
-The primary method is using SSH to a workstation (bastion) host.
+Login to OpenShift using oc command:
 
 [source,bash]
 ----
-$ ssh lab-user@workstation-<GUID>.rhpds.opentlc.com
-----
-
-=== OpenShift CLI
-
-OpenShift features a Command Line Interface for interacting with the Platform. The executable has been already installed and is available from the bastion host.
-
-Login to OpenShift with the following credentials
-
-User: *admin* +
-Password: *r3dh4t1!*
-
-[source,bash]
-----
-oc login infranode-<GUID>.generic.opentlc.com:8443 +
+oc login <openshift ip address>:8443 +
 ----
 
 You will see a warning related to insecure certificates. Given that this is a lab environment, it is OK to safely ignore these warnings. Type **Y** and hit Enter.
@@ -76,20 +51,20 @@ Welcome! See 'oc help' to get started.
 
 The OpenShift CLI has been successfully configured and ready for use in the lab!
 
+Lets grant OpenShift Console user privileges to administer the project from GUI.
+oc adm policy add-cluster-role-to-user admin <user>
+
 === OpenShift Web Console
 
 OpenShift features a rich user interface for managing resources on the platform.
 
 Open a web browser and navigate to the following location
 
-link:https://infranode-<GUID>.generic.opentlc.com:8443[https://infranode-<GUID>.generic.opentlc.com:8443]
+link:https://<openshift ip address>:8443]
 
 Similar to the CLI, a warning will appear stating that insecure certificates are being utilized. Ignore the certificate warning and continue on to the login page.
 
 Once again, use the following credentials at the login page
-
-User: *admin* +
-Password: *r3dh4t1!*
 
 The OpenShift catalog should be shown upon successful authentication
 
