@@ -46,7 +46,7 @@ When a build is present and running, the logs from the build execution can be se
 
 When the image has been built successfully, another template can be instantiated to create the associated DeploymentConfig, Service and the Route exposing the application outside the cluster. A single parameter must be provided with the name of the MongoDB service which is used to connect to the backend persistent store within the _iot-serverless_ project.
 
-Execute the following command to instantiate the software sensor deployment template.
+Execute the following command to instantiate the UI deployment template.
 
 [source,bash]
 ----

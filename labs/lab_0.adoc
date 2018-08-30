@@ -5,7 +5,10 @@
 = Lab 0: Lab Environment & Resources
 
 == Lab Environment
-This lab utilizes an environment that has already been provisioned using Red Hat CloudForms to deploy infrastructure needed our lab on Ravello. It is deployed as a runtime application consisting of 5 VMs as well as the overall network configuration. Red Hat OpenShift Container Platform 3.9 has already been deployed for us.
+This lab utilizes Red Hat Product Demo System (RHPDS) to provision the lab environment.
+RHPDS  uses Red Hat CloudForms to deploy infrastructure needed for our lab. +
+
+The infrastructure consists of 5 VMs as well as the overall network configuration. Red Hat OpenShift Container Platform 3.9 has already been deployed for this lab.
 
 OpenShift environment for this lab consists of the following systems:
 
@@ -19,18 +22,44 @@ OpenShift environment for this lab consists of the following systems:
 |`node03.example.com`  |`192.168.0.13` | Node 03
 |=======
 
+=== Access Your Lab Environment
 
-== Get GUID
+*Request an OPENTLC Account* +
+Get access to filling the form at: https://account.opentlc.com/account/requestAccessForm.php
 
-Open a web browser and navigate to: link:https://www.opentlc.com/guidgrabber/guidgrabber.cgi[https://www.opentlc.com/guidgrabber/guidgrabber.cgi]
+*Set Password* +
+After you have been notified by email that your account has been created, set your password using the temporary password provided in the email at: https://account.opentlc.com/account/setPasswordForm.php
 
+IMPORTANT: Your username will be your Red Hat email address with "@" replaced by "-"
+(E.g if your Red Hat email address is jdoe@redhat.com, your login will be jdoe-redhat.com)
 
-Select and fill in the following values:
+=== Provision Your Demo Environment
 
-Lab code: *L1122 - Develop IoT solutions with containers and serverless patterns* +
-Activation key: *iot*
+Log in to the link:https://rhpds.redhat.com/[Red Hat Product Demo System] with your provided credentials.
 
-image::guid-grabber.png[Request GUID]
+image::RHPDS-Login.png[RHPDS Login]
+
+WARNING: If you have problems with access to the lab environment, send an email to internal-enablement@redhat.com.
+
+Go to Services → Catalogs
+
+image::RHPDS-ChooseCatalog.png[Choose Catalog]
+
+Under Service Catalog → Red Hat Summit 2018, select IoT Solutions with Serverless arch.
+
+On the right pane, click Order.
+
+image::RHPDS-OrderLab.png[Order Lab]
+
+Review the information about lifecycle of the lab environment and how to extend it. Check box to confirm, click Submit
+
+image::RHPDS-StartLab.png[Start Lab]
+
+NOTE: It takes ~30 minutes for lab to be provisioned and become accessible. You can get real-time status of the lab environment at https://www.opentlc.com/rhpds-status
+
+You will be getting an email with information about how to access the lab environment.
+
+The email will also provide the unique GUID needed to access the lab environment.
 
 == Access Lab environment
 
@@ -40,9 +69,18 @@ Interaction with the environment will be facilitated using several mechanisms li
 
 The primary method is using SSH to a workstation (bastion) host.
 
+Upload your SSH key to www.opentlc.com/update to login and get into bastion.
+
 [source,bash]
 ----
-$ ssh lab-user@workstation-<GUID>.rhpds.opentlc.com
+$ ssh -i <your-private-key> lab-user@workstation-<GUID>.rhpds.opentlc.com
+----
+
+Change user to cloud-user
+
+[source,bash]
+----
+$ sudo -i -u cloud-user
 ----
 
 === OpenShift CLI
