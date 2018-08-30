@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 1.5.7">
+<meta name="generator" content="Asciidoctor 1.5.7.1">
 <title>Lab 0: Lab Environment &amp; Resources</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -197,7 +197,7 @@ body.toc2.toc-right{padding-left:0;padding-right:20em}}
 .admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
 table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
 .paragraph.lead>p,#preamble>.sectionbody>[class="paragraph"]:first-of-type p{font-size:1.21875em;line-height:1.6;color:rgba(0,0,0,.85)}
-table.tableblock #preamble>.sectionbody>.paragraph:first-of-type p{font-size:inherit}
+table.tableblock #preamble>.sectionbody>[class="paragraph"]:first-of-type p{font-size:inherit}
 .admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
 .admonitionblock>table td.icon{text-align:center;width:80px}
 .admonitionblock>table td.icon img{max-width:none}
@@ -440,7 +440,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_lab_environment">Lab Environment</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This lab utilizes an environment that has already been provisioned using Red Hat CloudForms to deploy infrastructure needed our lab on Ravello. It is deployed as a runtime application consisting of 5 VMs as well as the overall network configuration. Red Hat OpenShift Container Platform 3.9 has already been deployed for us.</p>
+<p>This lab utilizes Red Hat Product Demo System (RHPDS) to provision the lab environment.
+RHPDS  uses Red Hat CloudForms to deploy infrastructure needed for our lab.<br></p>
+</div>
+<div class="paragraph">
+<p>The infrastructure consists of 5 VMs as well as the overall network configuration. Red Hat OpenShift Container Platform 3.9 has already been deployed for this lab.</p>
 </div>
 <div class="paragraph">
 <p>OpenShift environment for this lab consists of the following systems:</p>
@@ -486,24 +490,96 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_get_guid">Get GUID</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="_access_your_lab_environment">Access Your Lab Environment</h3>
 <div class="paragraph">
-<p>Open a web browser and navigate to: <a href="https://www.opentlc.com/guidgrabber/guidgrabber.cgi">https://www.opentlc.com/guidgrabber/guidgrabber.cgi</a></p>
+<p><strong>Request an OPENTLC Account</strong><br>
+Get access to filling the form at: <a href="https://account.opentlc.com/account/requestAccessForm.php" class="bare">https://account.opentlc.com/account/requestAccessForm.php</a></p>
 </div>
 <div class="paragraph">
-<p>Select and fill in the following values:</p>
+<p><strong>Set Password</strong><br>
+After you have been notified by email that your account has been created, set your password using the temporary password provided in the email at: <a href="https://account.opentlc.com/account/setPasswordForm.php" class="bare">https://account.opentlc.com/account/setPasswordForm.php</a></p>
 </div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Your username will be your Red Hat email address with "@" replaced by "-"
+(E.g if your Red Hat email address is <a href="mailto:jdoe@redhat.com">jdoe@redhat.com</a>, your login will be jdoe-redhat.com)
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_provision_your_demo_environment">Provision Your Demo Environment</h3>
 <div class="paragraph">
-<p>Lab code: <strong>L1122 - Develop IoT solutions with containers and serverless patterns</strong><br>
-Activation key: <strong>iot</strong></p>
+<p>Log in to the <a href="https://rhpds.redhat.com/">Red Hat Product Demo System</a> with your provided credentials.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/guid-grabber.png" alt="Request GUID">
+<img src="images/RHPDS-Login.png" alt="RHPDS Login">
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+If you have problems with access to the lab environment, send an email to <a href="mailto:internal-enablement@redhat.com">internal-enablement@redhat.com</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Go to Services → Catalogs</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/RHPDS-ChooseCatalog.png" alt="Choose Catalog">
+</div>
+</div>
+<div class="paragraph">
+<p>Under Service Catalog → Red Hat Summit 2018, select IoT Solutions with Serverless arch.</p>
+</div>
+<div class="paragraph">
+<p>On the right pane, click Order.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/RHPDS-OrderLab.png" alt="Order Lab">
+</div>
+</div>
+<div class="paragraph">
+<p>Review the information about lifecycle of the lab environment and how to extend it. Check box to confirm, click Submit</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/RHPDS-StartLab.png" alt="Start Lab">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+It takes ~30 minutes for lab to be provisioned and become accessible. You can get real-time status of the lab environment at <a href="https://www.opentlc.com/rhpds-status" class="bare">https://www.opentlc.com/rhpds-status</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You will be getting an email with information about how to access the lab environment.</p>
+</div>
+<div class="paragraph">
+<p>The email will also provide the unique GUID needed to access the lab environment.</p>
 </div>
 </div>
 </div>
@@ -519,9 +595,20 @@ Activation key: <strong>iot</strong></p>
 <div class="paragraph">
 <p>The primary method is using SSH to a workstation (bastion) host.</p>
 </div>
+<div class="paragraph">
+<p>Upload your SSH key to www.opentlc.com/update to login and get into bastion.</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ ssh lab-user@workstation-&lt;GUID&gt;.rhpds.opentlc.com</code></pre>
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ ssh -i &lt;your-private-key&gt; lab-user@workstation-&lt;GUID&gt;.rhpds.opentlc.com</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Change user to cloud-user</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash">$ sudo -i -u cloud-user</code></pre>
 </div>
 </div>
 </div>
@@ -651,7 +738,7 @@ $ cd iot-serverless</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-08-28 15:22:37 MST
+Last updated 2018-08-30 01:28:34 -03
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
